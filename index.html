@@ -1,98 +1,187 @@
-<!DOCTYPE html>
-<html lang="uk">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Monster Clicker v0.2.0</title>
-<style>
-body{margin:0;background:#222;color:#fff;font:20px Arial;display:flex;justify-content:center;align-items:center;height:100vh}
-#g{text-align:center}
-#m{width:160px;height:160px;border-radius:50%;margin:20px auto;cursor:pointer}
-button{padding:8px 14px;font-size:16px;margin-top:10px}
-</style>
-</head>
-<body>
-<div id=g>
-<div>💰 <span id=c>0</span></div>
-<div id=m></div>
-<div id=n></div>
-<div>❤️ <span id=h></span></div>
-<div>⚔️ Damage: <span id=d>1.0</span></div>
-<button id=b>Upgrade Sword (30💰)</button>
-<div id=t></div>
-</div>
-
+<!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>Monster Clicker 0.7</title><style>
+*{box-sizing:border-box}body{margin:0;background:#151515;color:#fff;font-family:Arial,sans-serif;text-align:center}#game{max-width:560px;margin:auto;padding:18px}h1{margin:5px 0 18px}#stats{font-size:20px;line-height:1.7}#name{font-size:24px;font-weight:bold;margin:8px}#hpbox{width:90%;height:24px;margin:8px auto 14px;background:#333;border-radius:14px;overflow:hidden}#hpbar{height:100%;width:100%;transition:.1s}#hptext{font-size:16px}#monster{position:relative;width:220px;height:220px;margin:20px auto;border-radius:50%;background:#39d353;cursor:pointer;box-shadow:0 0 30px #39d353;transition:.08s;user-select:none}#monster{transition:transform .08s ease,background .1s,box-shadow .1s}#fire{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:72px;z-index:3}#spearcharge{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);width:90%;height:6px;background:#333;border-radius:4px;overflow:hidden;display:none}#spearchargebar{height:100%;width:0%;background:#c8a020;transition:none;border-radius:4px}#damage{font-size:18px;margin:12px}button{border:0;border-radius:10px;padding:12px 18px;margin:5px;background:#277cff;color:#fff;font-size:16px;font-weight:bold}button:disabled{opacity:.45}.shop{background:#202020;border:2px solid #444;border-radius:12px;margin-top:14px;padding:12px}.shop h2{margin:2px 0 8px;font-size:19px}#cooldown,#spearcooldown,#info{color:#aaa;font-size:14px;margin-top:6px}</style></head><body><div id="game">
+<h1>👹 Monster Clicker</h1>
+<div id="stats">🪙 Монети: <b id="coins">0</b><br>🏹 Стріли: <b id="arrows">0</b><br>❤️ Камені життя: <b id="stones">0</b><br>🗡️ Удари списом: <b id="spears">0</b><br>💣 Бомби: <b id="bombs">0</b></div>
+<div id="damage">⚔️ Damage: <b id="dmg">1</b></div><div id="name">Зомбі</div><div id="hpbox"><div id="hpbar"></div></div><div id="hptext">10 / 10 HP</div>
+<div id="monster"><div id="spearcharge"><div id="spearchargebar"></div></div></div>
+<button id="buy">⚔️ Купити Damage — 15 🪙</button><button id="shoot">🏹 Стріляти</button><div id="cooldown"></div>
+<button id="buySpear">🗡️ Купити 5 ударів списом — 150 🪙</button><div id="spearcooldown"></div>
+<button id="buyBomb">💣 Купити бомбу — 60 🪙</button><button id="useBomb">💥 Кинути бомбу</button>
+<div class="shop"><h2>🏹 Лучник</h2><div>Ціна: <b id="archerPrice">100</b> 🪙</div><div>Урон: <b id="archerDmg">1</b></div><div>Швидкість: <b>1.3</b> удара/сек</div><button id="buyArcher">Купити Лучника</button></div>
+<div class="shop"><h2>🔥 Вогнестрілька</h2><div>Ціна: <b id="gunPrice">300</b> 🪙 + 3 ❤️</div><div>Урон: <b id="gunDmg">2.7</b> HP / 3.4с</div><button id="buyGun">Купити Вогнестрільку</button></div>
+<div class="shop"><h2>⛏️ Шахтар</h2><div>Ціна: <b id="minerPrice">1000</b> 🪙</div><div>Дає: <b id="minerRate">1</b> ❤️ / 15с</div><button id="buyMiner">Купити Шахтаря</button></div>
+<button id="adminOpen">⚙️ Адмін-панель</button>
+<div id="admin" style="display:none;background:#202020;border:2px solid #555;border-radius:12px;margin-top:14px;padding:14px">
+<h2>🛠️ Адмін-панель</h2>
+<input id="adminPass" type="password" placeholder="Пароль" style="padding:10px;border-radius:8px;border:0;margin:5px;width:180px">
+<button id="adminLogin">Увійти</button>
+<div id="adminControls" style="display:none">
+<hr>
+<input id="giveAmount" type="number" value="100" min="0" style="padding:10px;width:120px;border-radius:8px;border:0">
+<select id="giveType" style="padding:10px;border-radius:8px">
+<option value="coins">🪙 Монети</option><option value="arrows">🏹 Стріли</option><option value="stones">❤️ Камені життя</option><option value="spears">🗡️ Удари списом</option><option value="bombs">💣 Бомби</option>
+</select><button id="give">Видати</button><br>
+<input id="setDamage" type="number" value="100" min="0" step="0.1" style="padding:10px;width:120px;border-radius:8px;border:0">
+<button id="giveDamage">Встановити Damage</button><br>
+<select id="spawnType" style="padding:10px;border-radius:8px">
+<option value="zombie">🧟 Зомбі</option><option value="skeleton">💀 Скелет</option><option value="slime">🟢 Слайм</option><option value="knight">🧟‍♂️ Зомбі-лицар</option><option value="wither">⚫ Візер-скелет</option><option value="blaze">🔥 Блейз</option><option value="eblaze">⚡ Електричний блейз</option><option value="giant">🧟 Зомбі-великан</option>
+</select><button id="spawnAdmin">Заспавнити</button>
+<div id="adminMsg" style="color:#8f8;margin-top:8px"></div>
+</div></div>
+<div id="info">Клікай по монстру щоб атакувати! Затримай 1.2с для удару списом 🗡️</div></div>
 <script>
-let M=[
-["Zombie","lime",10,3,5,0],
-["Skeleton","gray",25,7,16,30],
-["Warden","#001f5b",70,23,36,0]
-],hp,max,coins=0,dmg=1,cost=30,dead=0,cur;
+let coins=0,arrows=0,stones=0,spears=0,damage=1,hp=10,maxHp=10,price=15,purchase=0,monsterType="zombie",shootReady=true,cooldown=0;
+let archerCount=0,archerPrice=100,archerDmg=1,archerTimer=null,gunCount=0,gunPrice=300,gunDmg=2.7,gunTimer=null;
+let minerCount=0,minerPrice=1000,minerRate=1,minerTimer=null;
+let spearReady=true,spearCooldownLeft=0,spearCooldownTimer=null;
+let bombs=0;
+let holdTimer=null,holdStart=null,holdAnim=null,holding=false;
 
-function sp(){
-dead=0;
-let r=Math.random()*100;
-cur=r<7?M[2]:r<47?M[1]:M[0];
-m.style.display="block";
-m.style.background=cur[1];
-hp=max=cur[2];
-n.textContent=cur[0];
-h.textContent=hp+"/"+max;
-t.textContent="";
+const $=id=>document.getElementById(id);
+const coinsEl=$("coins"),arrowsEl=$("arrows"),stonesEl=$("stones"),dmgEl=$("dmg"),spearsEl=$("spears");
+const hpBar=$("hpbar"),hpText=$("hptext"),nameEl=$("name");
+const monster=$("monster"),buy=$("buy"),shoot=$("shoot"),cooldownEl=$("cooldown");
+const buyArcher=$("buyArcher"),buyGun=$("buyGun"),buyMiner=$("buyMiner");
+const buySpear=$("buySpear"),spearcooldownEl=$("spearcooldown");
+const buyBomb=$("buyBomb"),useBomb=$("useBomb"),bombsEl=$("bombs");
+const spearChargeWrap=$("spearcharge"),spearChargeBar=$("spearchargebar");
+const adminOpen=$("adminOpen"),admin=$("admin"),adminLogin=$("adminLogin"),adminPass=$("adminPass"),adminControls=$("adminControls");
+const giveAmount=$("giveAmount"),giveType=$("giveType"),give=$("give"),setDamage=$("setDamage"),giveDamage=$("giveDamage"),spawnType=$("spawnType"),spawnAdmin=$("spawnAdmin"),adminMsg=$("adminMsg");
+
+const fire=document.createElement("span");fire.id="fire";fire.textContent="🔥";monster.appendChild(fire);
+
+let adminUnlocked=false;
+adminOpen.onclick=()=>{admin.style.display=admin.style.display==="none"?"block":"none"};
+adminLogin.onclick=()=>{if(adminPass.value==="25850"){adminUnlocked=true;adminControls.style.display="block";adminMsg.textContent="OK"}else adminMsg.textContent="Wrong password"};
+give.onclick=()=>{if(!adminUnlocked)return;let v=Math.max(0,Number(giveAmount.value)||0),t=giveType.value;if(t==="coins")coins+=v;else if(t==="arrows")arrows+=v;else if(t==="stones")stones+=v;else if(t==="spears")spears+=v;else if(t==="bombs")bombs+=v;update();adminMsg.textContent="Given: "+v};
+giveDamage.onclick=()=>{if(!adminUnlocked)return;damage=Math.max(0,Number(setDamage.value)||0);update();adminMsg.textContent="Damage: "+fmt(damage)};
+spawnAdmin.onclick=()=>{if(!adminUnlocked)return;let t=spawnType.value;
+if(t==="zombie"){monsterType="zombie";maxHp=10;hp=10;nameEl.textContent="Зомбі";setColor("#39d353","#39d353")}
+else if(t==="skeleton"){monsterType="skeleton";maxHp=20;hp=20;nameEl.textContent="Скелет";setColor("#aaa","#aaa")}
+else if(t==="slime"){monsterType="slime";maxHp=50;hp=50;nameEl.textContent="Слайм";setColor("#7cff6b","#7cff6b")}
+else if(t==="knight"){monsterType="knight";maxHp=120;hp=120;nameEl.textContent="Зомбі-лицар";setColor("linear-gradient(90deg,#39d353 0 50%,#aaa 50% 100%)","#6f8")}
+else if(t==="wither"){monsterType="wither";maxHp=250;hp=250;nameEl.textContent="Візер-скелет";setColor("#444","#222")}
+else if(t==="blaze"){monsterType="blaze";maxHp=500;hp=500;nameEl.textContent="Блейз";setColor("#ffb000","#ff7a00")}
+else if(t==="eblaze"){monsterType="eblaze";maxHp=1500;hp=1500;nameEl.textContent="Електричний блейз";setColor("#0a1a6e","#1a3fff")}
+else if(t==="giant"){monsterType="giant";maxHp=5000;hp=5000;nameEl.textContent="Зомбі-великан";setColor("linear-gradient(135deg,#1a5c1a 0 50%,#b0b8b0 50% 100%)","#2d8c2d")}
+update();adminMsg.textContent="Spawned: "+nameEl.textContent};
+
+function fmt(n){return Number(n.toFixed(2)).toString()}
+function setColor(bg,shadow){monster.style.background=bg;monster.style.boxShadow="0 0 30px "+shadow;hpBar.style.background=bg}
+function spawn(){let r=Math.random();
+if(r<.000997){monsterType="giant";maxHp=5000;hp=5000;nameEl.textContent="Зомбі-великан";setColor("linear-gradient(135deg,#1a5c1a 0 50%,#b0b8b0 50% 100%)","#2d8c2d")}
+else if(r<.00427){monsterType="eblaze";maxHp=1500;hp=1500;nameEl.textContent="Електричний блейз";setColor("#0a1a6e","#1a3fff")}
+else if(r<.007){monsterType="blaze";maxHp=500;hp=500;nameEl.textContent="Блейз";setColor("#ffb000","#ff7a00")}
+else if(r<.027){monsterType="wither";maxHp=250;hp=250;nameEl.textContent="Візер-скелет";setColor("#444444","#222")}
+else if(r<.077){monsterType="knight";maxHp=120;hp=120;nameEl.textContent="Зомбі-лицар";setColor("linear-gradient(90deg,#39d353 0 50%,#aaa 50% 100%)","#6f8")}
+else if(r<.277){monsterType="slime";maxHp=50;hp=50;nameEl.textContent="Слайм";setColor("#7cff6b","#7cff6b")}
+else if(r<.747){monsterType="skeleton";maxHp=20;hp=20;nameEl.textContent="Скелет";setColor("#aaa","#aaa")}
+else{monsterType="zombie";maxHp=10;hp=10;nameEl.textContent="Зомбі";setColor("#39d353","#39d353")}}
+
+function update(){
+  coinsEl.textContent=coins;arrowsEl.textContent=arrows;stonesEl.textContent=stones;spearsEl.textContent=spears;bombsEl.textContent=bombs;dmgEl.textContent=fmt(damage);
+  hpText.textContent=fmt(Math.max(0,hp))+" / "+maxHp+" HP";hpBar.style.width=Math.max(0,hp/maxHp*100)+"%";
+  buy.textContent="⚔️ Купити Damage — "+price+" 🪙";buy.disabled=coins<price;
+  shoot.disabled=!shootReady||arrows<1;cooldownEl.textContent=shootReady?"":"⏳ Перезарядка: "+cooldown+"с";
+  buySpear.disabled=coins<150;
+  buyBomb.disabled=coins<60;useBomb.disabled=bombs<1;
+  spearcooldownEl.textContent=spearReady?(spears>0?"🗡️ Готово до удару!":""):"⏳ Спис: "+spearCooldownLeft+"с";
+  $("archerPrice").textContent=archerPrice;$("archerDmg").textContent=fmt(archerDmg);buyArcher.disabled=coins<archerPrice;
+  $("gunPrice").textContent=gunPrice;$("gunDmg").textContent=fmt(gunDmg);buyGun.disabled=coins<gunPrice||stones<3;
+  $("minerPrice").textContent=minerPrice;$("minerRate").textContent=fmt(minerRate);buyMiner.disabled=coins<minerPrice;
 }
 
-sp();
+function kill(){
+  if(monsterType==="giant"){coins+=2000;spears+=20;stones+=Math.floor(Math.random()*15)+1}
+  else if(monsterType==="eblaze"){coins+=Math.floor(Math.random()*196)+237;stones+=12}
+  else if(monsterType==="blaze"){coins+=Math.floor(Math.random()*125)+132;if(Math.random()<.76)stones+=Math.floor(Math.random()*4)+5}
+  else if(monsterType==="wither"){coins+=Math.floor(Math.random()*77)+56;if(Math.random()<.43)stones+=Math.floor(Math.random()*2)+2}
+  else if(monsterType==="knight"){coins+=Math.floor(Math.random()*30)+27;arrows+=Math.floor(Math.random()*3)+1}
+  else if(monsterType==="slime")coins+=Math.floor(Math.random()*17)+7;
+  else if(monsterType==="skeleton")coins+=Math.floor(Math.random()*6)+4;
+  else coins+=Math.floor(Math.random()*3)+2;
+  spawn()
+}
+function hit(x){hp-=x;if(hp<=0)kill();update()}
 
-b.onclick=()=>{
-if(coins<cost)return;
-coins-=cost;
-dmg=+(dmg+0.2).toFixed(1);
-cost+=15;
-c.textContent=coins;
-d.textContent=dmg.toFixed(1);
-b.textContent="Upgrade Sword ("+cost+"💰)";
-};
-
-m.onclick=()=>{
-if(dead)return;
-
-if(cur[0]=="Skeleton"&&Math.random()<0.3){
-t.textContent="❌ Промах!";
-return;
+// --- Спис: зарядка при затисканні ---
+function startHold(){
+  holding=true;
+  holdStart=Date.now();
+  // Показуємо смужку заряду тільки якщо є спис
+  if(spearReady&&spears>0){
+    spearChargeWrap.style.display="block";
+    spearChargeBar.style.width="0%";
+    spearChargeBar.style.background="#c8a020";
+    const HOLD=1200;
+    holdAnim=setInterval(()=>{
+      let pct=Math.min(100,(Date.now()-holdStart)/HOLD*100);
+      spearChargeBar.style.width=pct+"%";
+      if(pct>=100){spearChargeBar.style.background="#fff700"}
+    },16);
+  }
+}
+function animateHit(scale=.88,dur=120){
+  monster.style.transform="scale("+scale+")";
+  setTimeout(()=>{monster.style.transform="scale(1)"},dur);
+}
+function animateSpear(){
+  monster.style.transform="scale(.80)";
+  setTimeout(()=>{monster.style.transform="scale(1.05)"},150);
+  setTimeout(()=>{monster.style.transform="scale(1)"},260);
+}
+function normalAttack(){animateHit();
+  if(monsterType==="eblaze"){if(Math.random()<.28)coins+=5;hit(damage)}
+  else if(monsterType==="knight"){let crit=Math.random()<.19;hp-=damage;if(crit)hp-=damage*2.4;if(hp<=0)kill();update()}
+  else{if(monsterType==="skeleton"&&Math.random()<.12)arrows++;if(monsterType==="slime"){let r=Math.random();if(r<.06)coins+=Math.floor(Math.random()*2)+2;else if(r<.30)coins++}hit(damage)}
+}
+function endHold(){
+  if(!holding)return;
+  holding=false;
+  clearInterval(holdAnim);
+  let elapsed=Date.now()-holdStart;
+  spearChargeWrap.style.display="none";
+  spearChargeBar.style.width="0%";
+  if(elapsed>=1200&&spearReady&&spears>0){
+    // Удар списом
+    spears--;
+    spearReady=false;
+    let dmgSpear=damage*1.4;
+    if(monsterType==="eblaze"){if(Math.random()<.28)coins+=5}
+    else if(monsterType==="skeleton"&&Math.random()<.12)arrows++;
+    else if(monsterType==="slime"){let r=Math.random();if(r<.06)coins+=Math.floor(Math.random()*2)+2;else if(r<.30)coins++}
+    animateSpear();
+    hit(dmgSpear);
+    spearCooldownLeft=2;
+    spearCooldownTimer=setInterval(()=>{
+      spearCooldownLeft--;
+      if(spearCooldownLeft<=0){clearInterval(spearCooldownTimer);spearReady=true;spearCooldownLeft=0}
+      update();
+    },750);
+  } else {
+    // Звичайний удар
+    normalAttack();
+  }
+  update();
 }
 
-hp-=dmg;
+monster.addEventListener("mousedown",startHold);
+monster.addEventListener("mouseup",endHold);
+monster.addEventListener("mouseleave",()=>{if(holding){holding=false;clearInterval(holdAnim);spearChargeWrap.style.display="none";spearChargeBar.style.width="0%"}});
+monster.addEventListener("touchstart",e=>{e.preventDefault();startHold()},{passive:false});
+monster.addEventListener("touchend",e=>{e.preventDefault();endHold()},{passive:false});
 
-if(cur[0]=="Warden"&&Math.random()<0.1){
-coins++;
-c.textContent=coins;
-t.textContent="🍀 +1 монета";
-}
 
-if(hp<0)hp=0;
-h.textContent=hp+"/"+max;
 
-if(hp<=0){
-dead=1;
-m.style.display="none";
+buySpear.onclick=()=>{if(coins<150)return;coins-=150;spears+=5;update()}
+buy.onclick=()=>{if(coins>=price){coins-=price;damage+=.5+purchase*.2;purchase++;price=Math.ceil(price*1.6);update()}}
+shoot.onclick=()=>{if(!shootReady||!arrows)return;arrows--;shootReady=false;cooldown=10;hit(damage*4.2);let t=setInterval(()=>{cooldown--;if(cooldown<=0){clearInterval(t);shootReady=true;cooldown=0}update()},1000)}
+buyArcher.onclick=()=>{if(coins<archerPrice)return;coins-=archerPrice;archerCount++;archerDmg*=1.05;archerPrice=Math.ceil(archerPrice*1.5);if(!archerTimer)archerTimer=setInterval(()=>{if(hp>0&&archerCount)hit(archerDmg*archerCount)},1000/1.3);update()}
+buyGun.onclick=()=>{if(coins<gunPrice||stones<3)return;coins-=gunPrice;stones-=3;gunCount++;gunDmg*=1.2;gunPrice=Math.ceil(gunPrice*1.6);if(!gunTimer)gunTimer=setInterval(()=>{if(hp>0&&gunCount){hp-=gunDmg*gunCount;setColor("#f33","#f00");fire.style.display="block";setTimeout(()=>{fire.style.display="none";if(monsterType==="giant")setColor("linear-gradient(135deg,#1a5c1a 0 50%,#b0b8b0 50% 100%)","#2d8c2d");else if(monsterType==="eblaze")setColor("#0a1a6e","#1a3fff");else if(monsterType==="blaze")setColor("#ffb000","#ff7a00");else if(monsterType==="wither")setColor("#444","#222");else if(monsterType==="knight")setColor("linear-gradient(90deg,#39d353 0 50%,#aaa 50% 100%)","#6f8");else if(monsterType==="slime")setColor("#7cff6b","#7cff6b");else if(monsterType==="skeleton")setColor("#aaa","#aaa");else setColor("#39d353","#39d353")},400);if(hp<=0)kill();update()}},3400);update()}
+buyMiner.onclick=()=>{if(coins<minerPrice)return;coins-=minerPrice;minerCount++;minerPrice=Math.ceil(minerPrice*2.5);minerRate*=2;if(!minerTimer)minerTimer=setInterval(()=>{stones+=minerRate;update()},15000);update()}
 
-let r=Math.floor(Math.random()*(cur[4]-cur[3]+1))+cur[3];
-coins+=r;
-c.textContent=coins;
+buyBomb.onclick=()=>{if(coins<60)return;coins-=60;bombs++;update()}
+useBomb.onclick=()=>{if(bombs<1)return;bombs--;hit(damage*1.7);update()}
 
-let s=4;
-t.innerHTML="💰 +"+r+"<br>⏳ "+s;
-
-let i=setInterval(()=>{
-s--;
-if(s)t.innerHTML="💰 +"+r+"<br>⏳ "+s;
-else{
-clearInterval(i);
-sp();
-}
-},1000);
-}
-};
-</script>
-</body>
-  </html>
+spawn();update();
+</script></body></html>
