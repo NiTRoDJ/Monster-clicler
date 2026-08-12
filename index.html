@@ -1,5 +1,17 @@
-<!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>Monster Clicker 1.0.3</title><style>
+<!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>Monster Clicker 1.2</title><style>
 *{box-sizing:border-box}body{margin:0;background:#151515;color:#fff;font-family:Arial,sans-serif;text-align:center}
+#langScreen{position:fixed;inset:0;background:#151515;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+#langScreen h2{font-size:26px;margin:0 0 10px}
+.langBtn{border:0;border-radius:14px;padding:16px 36px;font-size:20px;font-weight:bold;cursor:pointer;background:#222;color:#fff;border:2px solid #444;transition:.15s;width:220px}
+.langBtn:hover{background:#333;border-color:#888}
+#resultScreen{display:none;position:fixed;inset:0;background:#000d;z-index:998;align-items:center;justify-content:center;flex-direction:column;gap:20px}
+#resultScreen.show{display:flex}
+#resultBox{background:#1a1a1a;border:2px solid #555;border-radius:20px;padding:36px 30px;text-align:center;max-width:340px}
+#resultTitle{font-size:32px;font-weight:bold;margin-bottom:10px}
+#resultMsg{font-size:16px;color:#aaa;margin-bottom:24px}
+.resultBtn{border:0;border-radius:12px;padding:13px 28px;font-size:17px;font-weight:bold;cursor:pointer;margin:5px}
+#btnContinue{background:#277cff;color:#fff}
+#btnRestart{background:#444;color:#fff}
 #game{max-width:560px;margin:auto;padding:18px}h1{margin:5px 0 18px}
 #stats{font-size:19px;line-height:1.8}
 #name{font-size:24px;font-weight:bold;margin:8px}
@@ -49,14 +61,56 @@
 .elBtn.active-btn{background:#c05000;cursor:default}
 .elBtn.active-btn-ice{background:#1a6fa0;cursor:default}
 #elActiveLabel{font-size:14px;color:#ff9944;font-weight:bold;margin-bottom:8px;min-height:20px}
-</style></head><body><div id="game">
+</style></head><body>
+<div id="resultScreen">
+  <div id="resultBox">
+    <div id="resultTitle"></div>
+    <div id="resultMsg"></div>
+    <button class="resultBtn" id="btnContinue" onclick="closeResult()"></button>
+    <button class="resultBtn" id="btnRestart" onclick="restartGame()"></button>
+  </div>
+</div>
+<div id="langScreen">
+  <h2>🌍 Вибери мову / Choose language / Выберите язык</h2>
+  <button class="langBtn" onclick="setLang('uk')">🇺🇦 Українська</button>
+  <button class="langBtn" onclick="setLang('en')">🇬🇧 English</button>
+  <button class="langBtn" onclick="setLang('ru')">🇷🇺 Русский</button>
+</div>
+
+<div id="winScreen" style="display:none;position:fixed;inset:0;background:#151515;z-index:998;flex-direction:column;align-items:center;justify-content:center;gap:20px">
+  <div style="font-size:72px">🏆</div>
+  <h2 id="winTitle" style="font-size:32px;margin:0;color:#ffd700"></h2>
+  <p id="winSub" style="color:#aaa;font-size:18px;margin:0"></p>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+    <button id="winContinue" class="langBtn" style="background:#277cff;border-color:#277cff;display:none"></button>
+    <button id="winRestart" class="langBtn" style="background:#444;border-color:#666"></button>
+  </div>
+</div>
+
+<div id="loseScreen" style="display:none;position:fixed;inset:0;background:#151515;z-index:998;flex-direction:column;align-items:center;justify-content:center;gap:20px">
+  <div style="font-size:72px">😈</div>
+  <h2 id="loseTitle" style="font-size:28px;margin:0;color:#f44"></h2>
+  <button id="loseRestart" class="langBtn" style="background:#444;border-color:#666"></button>
+</div>
+<div id="game" style="display:none">
+<div id="hungerWrap" style="width:90%;margin:6px auto 2px">
+  <div style="display:flex;justify-content:space-between;font-size:13px;color:#e88;margin-bottom:3px">
+    <span id="hungerLabel">🍖 Голод</span><span id="hungerPct">100%</span>
+  </div>
+  <div style="height:10px;background:#333;border-radius:8px;overflow:hidden">
+    <div id="hungerBar" style="height:100%;width:100%;background:#e05555;border-radius:8px;transition:width .4s"></div>
+  </div>
+</div>
 <h1>👹 Monster Clicker</h1>
 <div id="stats">🪙 <b id="coins">0</b> &nbsp;🏹 <b id="arrows">0</b> &nbsp;❤️ <b id="stones">0</b><br>🗡️ <b id="spears">0</b> &nbsp;💣 <b id="bombs">0</b> &nbsp;💎 <b id="elemStones">0</b></div>
 <div id="damage">⚔️ Damage: <b id="dmg">1</b></div>
 <div id="name">Зомбі</div>
 <div id="hpbox"><div id="hpbar"></div></div>
 <div id="hptext">10 / 10 HP</div>
-<div id="monster"><div id="spearcharge"><div id="spearchargebar"></div></div></div>
+<div style="display:flex;align-items:center;justify-content:center;gap:12px">
+  <div id="monster"><div id="spearcharge"><div id="spearchargebar"></div></div></div>
+  <button id="foodBtn" style="border:0;border-radius:14px;padding:10px 14px;font-size:28px;background:#2a2a2a;cursor:pointer;border:2px solid #444;position:relative" title="Їжа">🍖<span id="foodBadge" style="display:none;position:absolute;top:-6px;right:-6px;background:#e05555;color:#fff;font-size:12px;font-weight:bold;border-radius:50%;min-width:18px;height:18px;line-height:18px;padding:0 4px"></span></button>
+</div>
 <div id="superPowerWrap" style="display:none;margin-top:-6px;margin-bottom:4px">
   <div style="font-size:32px;margin-bottom:4px">✨</div>
   <div style="width:120px;height:8px;background:#333;border-radius:6px;margin:0 auto;overflow:hidden">
@@ -79,6 +133,7 @@
     <button class="tab active" id="tabItems">🎒 Предмети</button>
     <button class="tab" id="tabUpgrades">⬆️ Покращення</button>
     <button class="tab" id="tabElements">🔮 Стихії</button>
+    <button class="tab" id="tabFood">🍖 Їжа</button>
   </div>
   <!-- Предмети -->
   <div class="shopSection active" id="secItems">
@@ -120,6 +175,10 @@
     <div class="shopItem">
       <div class="info"><b>💰 Золотий майнер</b><small><span id="goldRate">15</span> 🪙 / сек | Ціна: <span id="goldPrice">2500</span> 🪙</small></div>
       <button id="buyGoldMiner">Купити</button>
+    </div>
+    <div class="shopItem" style="border-color:#ffd700">
+      <div class="info"><b id="victoryItemName">🏆 Перемога</b><small id="victoryItemDesc">100,000,000 🪙</small></div>
+      <button id="buyVictory">Купити</button>
     </div>
   </div>
   <!-- Стихії -->
@@ -183,6 +242,27 @@
       <button class="elBtn" id="elSuperGodBtn">250000 🪙</button>
     </div>
   </div>
+  <!-- Їжа -->
+  <div class="shopSection" id="secFood">
+    <div style="color:#aaa;font-size:13px;margin-bottom:8px" id="foodShopNote">Купуй їжу щоб відновити голод</div>
+    <div class="shopItem">
+      <div class="info"><b id="appleShopName">🍎 Яблуко</b><small id="appleShopDesc">+5% голоду</small></div>
+      <button id="buyApple">40 🪙</button>
+    </div>
+    <div class="shopItem">
+      <div class="info"><b id="meatShopName">🥩 М'ясо</b><small id="meatShopDesc">+15% голоду | ⚠️ damage÷1.25 на 5с</small></div>
+      <button id="buyMeat">100 🪙</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Панель їжі -->
+<div id="foodOverlay" style="display:none;position:fixed;inset:0;background:#000a;z-index:100;overflow-y:auto">
+<div style="background:#1a1a1a;border:2px solid #555;border-radius:18px;max-width:360px;margin:40px auto;padding:18px;position:relative">
+  <button id="foodClose" style="position:absolute;top:12px;right:16px;background:none;border:0;color:#aaa;font-size:26px;cursor:pointer">✕</button>
+  <h2 id="foodPanelTitle" style="margin:4px 0 14px">🍖 Їжа</h2>
+  <div id="foodList"><div style="color:#aaa;text-align:center;padding:20px" id="foodEmpty">Їжа відсутня. Купи у магазині!</div></div>
 </div>
 </div>
 
@@ -198,17 +278,135 @@
 </select><button class="actbtn" id="giveBtn">Видати</button><br>
 <input id="setDamage" type="number" value="100" min="0" step="0.1" style="padding:10px;width:120px;border-radius:8px;border:0">
 <button class="actbtn" id="giveDamageBtn">Встановити Damage</button><br>
+<input id="setHunger" type="number" value="100" min="0" max="100" style="padding:10px;width:120px;border-radius:8px;border:0">
+<button class="actbtn" id="giveHungerBtn">Встановити Голод</button><br>
 <select id="spawnType" style="padding:10px;border-radius:8px">
 <option value="zombie">🧟 Зомбі</option><option value="skeleton">💀 Скелет</option><option value="slime">🟢 Слайм</option><option value="knight">🧟‍♂️ Зомбі-лицар</option><option value="wither">⚫ Візер-скелет</option><option value="blaze">🔥 Блейз</option><option value="eblaze">⚡ Ел. блейз</option><option value="giant">🧟 Зомбі-великан</option><option value="dragon">🐉 Дракон</option><option value="ftitan">🔥 Вогняний Титан</option>
 </select><button class="actbtn" id="spawnAdmin">Заспавнити</button>
 <div id="adminMsg" style="color:#8f8;margin-top:8px"></div>
+<hr><b id="langLabel">🌍 Мова</b><br>
+<button class="actbtn" onclick="setLang('uk');applyLang()">🇺🇦</button>
+<button class="actbtn" onclick="setLang('en');applyLang()">🇬🇧</button>
+<button class="actbtn" onclick="setLang('ru');applyLang()">🇷🇺</button>
 </div></div>
 <div id="info">Клікай по монстру щоб атакувати! Затримай 1.2с для удару списом 🗡️</div>
 </div>
 
 <script>
+const T={
+  uk:{title:"👹 Monster Clicker",clickInfo:"Клікай по монстру щоб атакувати! Затримай 1.2с для удару списом 🗡️",shop:"🛒 Магазин",items:"🎒 Предмети",upgrades:"⬆️ Покращення",elements:"🔮 Стихії",arrows5:"🏹 Стріли (×5)",arrowsDesc:"Урон: damage × 4.2 | Перезарядка: 10с",spear5:"🗡️ Спис (×5)",spearDesc:"Урон: damage × 1.4 | Затримай 1.2с для удару",bomb:"💣 Бомба",bombDesc:"Урон: damage × 1.7 | Миттєво",elemStone:"💎 Камінь стихії",elemStoneDesc:"Потрібен для Супер-бога",swordUpg:"⚔️ Покращення меча",swordDesc:"+damage | Ціна:",buy:"Купити",archer:"🏹 Лучник",archerDesc:"уд, 1.3 уд/сек | Ціна:",gun:"🔥 Вогнестрілька",gunDesc:"HP / 3.4с | Ціна:",miner:"⛏️ Шахтар",minerDesc:"❤️ / 15с | Ціна:",goldMiner:"💰 Золотий майнер",goldMinerDesc:"🪙 / сек | Ціна:",elOnlyOne:"Купуються раз і назавжди. Активна може бути лише одна.",activate:"Активувати",active:"✅ Активно",bought:"Куплено",nowActive:"Зараз активна",admin:"⚙️ Адмін",adminTitle:"🛠️ Адмін-панель",password:"Пароль",login:"Увійти",give:"Видати",setDmg:"Встановити Damage",spawn:"Заспавнити",shoot:"🏹 Стріляти",throwBomb:"💥 Кинути бомбу",reload:"⏳ Перезарядка:",spearReady:"🗡️ Готово до удару!",spearCD:"⏳ Спис:",lang:"🌍 Мова",
+    elFireDesc:"20% шанс при ударі: +damage×1.15",elIceDesc:"30% шанс: +монети і ×1.3 damage",elPoisonDesc:"60% шанс: +damage÷4 урону",elLightDesc:"7% шанс: +damage×1.5 монет",elDemonDesc:"5% шанс: тричі damage×3 з затримкою 0.24с",elUltraDesc:"15% отрута | 35% лід | 5% демон",elSuperGodDesc:"Всі стихії одночасно",archerFullDesc:"1.3 уд/сек | Ціна:",gunFullDesc:"HP / 3.4с | Ціна:",minerFullDesc:"❤️ / 15с | Ціна:",goldMinerFullDesc:"🪙 / сек | Ціна:",
+    elFireName:"🔥 Вогонь",elIceName:"🧊 Лід",elPoisonName:"☠️ Отрута",elLightName:"✨ Світло",elDemonName:"😈 Демон",elUltraName:"👑 Ультра Володар",elSuperGodName:"🌟 Супер-бог",
+    victoryName:"🏆 Перемога",victoryDesc:"Фінальна ціль",
+    hunger:"🍖 Голод",food:"🍖 Їжа",foodNote:"Купуй їжу щоб відновити голод",
+    apple:"🍎 Яблуко",appleDesc:"+5% голоду",
+    meat:"🥩 М'ясо",meatDesc:"+15% голоду | ⚠️ damage÷1.25 на 5с",
+    eat:"Їсти",noFood:"Їжа відсутня. Купи у магазині!",
+    setHunger:"Встановити Голод",
+    winTitle:"Ти переміг!",winMsg:"Чесна перемога! Молодець!",
+    loseTitle:"Ти програв.",loseMsg:"Грай чесно.",
+    starveTitle:"Ви вмерли з голоду.",starveMsg:"Ви програли.",
+    keepPlaying:"Грати далі",restart:"Все заново"},
+  en:{title:"👹 Monster Clicker",clickInfo:"Click the monster to attack! Hold 1.2s for spear strike 🗡️",shop:"🛒 Shop",items:"🎒 Items",upgrades:"⬆️ Upgrades",elements:"🔮 Elements",arrows5:"🏹 Arrows (×5)",arrowsDesc:"Damage: damage × 4.2 | Reload: 10s",spear5:"🗡️ Spear (×5)",spearDesc:"Damage: damage × 1.4 | Hold 1.2s to strike",bomb:"💣 Bomb",bombDesc:"Damage: damage × 1.7 | Instant",elemStone:"💎 Element Stone",elemStoneDesc:"Required for Super-God",swordUpg:"⚔️ Sword Upgrade",swordDesc:"+damage | Price:",buy:"Buy",archer:"🏹 Archer",archerDesc:"dmg, 1.3 hits/s | Price:",gun:"🔥 Flamethrower",gunDesc:"HP / 3.4s | Price:",miner:"⛏️ Miner",minerDesc:"❤️ / 15s | Price:",goldMiner:"💰 Gold Miner",goldMinerDesc:"🪙 / sec | Price:",elOnlyOne:"Bought once, kept forever. Only one can be active.",activate:"Activate",active:"✅ Active",bought:"Bought",nowActive:"Currently active",admin:"⚙️ Admin",adminTitle:"🛠️ Admin Panel",password:"Password",login:"Login",give:"Give",setDmg:"Set Damage",spawn:"Spawn",shoot:"🏹 Shoot",throwBomb:"💥 Throw Bomb",reload:"⏳ Reload:",spearReady:"🗡️ Ready to strike!",spearCD:"⏳ Spear:",lang:"🌍 Language",
+    elFireDesc:"20% chance on hit: +damage×1.15",elIceDesc:"30% chance: +coins and ×1.3 damage",elPoisonDesc:"60% chance: +damage÷4 bonus",elLightDesc:"7% chance: +damage×1.5 coins",elDemonDesc:"5% chance: damage×3 three times, 0.24s delay",elUltraDesc:"15% poison | 35% ice | 5% demon",elSuperGodDesc:"All elements at once",
+    elFireName:"🔥 Fire",elIceName:"🧊 Ice",elPoisonName:"☠️ Poison",elLightName:"✨ Light",elDemonName:"😈 Demon",elUltraName:"👑 Ultra Lord",elSuperGodName:"🌟 Super-God",
+    victoryName:"🏆 Victory",victoryDesc:"The final goal",
+    hunger:"🍖 Hunger",food:"🍖 Food",foodNote:"Buy food to restore hunger",
+    apple:"🍎 Apple",appleDesc:"+5% hunger",
+    meat:"🥩 Meat",meatDesc:"+15% hunger | ⚠️ damage÷1.25 for 5s",
+    eat:"Eat",noFood:"No food. Buy some in the shop!",
+    setHunger:"Set Hunger",
+    winTitle:"You won!",winMsg:"Fair victory! Well done!",
+    loseTitle:"You lost.",loseMsg:"Play fair.",
+    starveTitle:"You starved to death.",starveMsg:"You lost.",
+    keepPlaying:"Keep playing",restart:"Restart"},
+  ru:{title:"👹 Monster Clicker",clickInfo:"Кликай по монстру чтобы атаковать! Удержи 1.2с для удара копьём 🗡️",shop:"🛒 Магазин",items:"🎒 Предметы",upgrades:"⬆️ Улучшения",elements:"🔮 Стихии",arrows5:"🏹 Стрелы (×5)",arrowsDesc:"Урон: damage × 4.2 | Перезарядка: 10с",spear5:"🗡️ Копьё (×5)",spearDesc:"Урон: damage × 1.4 | Удержи 1.2с для удара",bomb:"💣 Бомба",bombDesc:"Урон: damage × 1.7 | Мгновенно",elemStone:"💎 Камень стихии",elemStoneDesc:"Нужен для Супер-бога",swordUpg:"⚔️ Улучшение меча",swordDesc:"+damage | Цена:",buy:"Купить",archer:"🏹 Лучник",archerDesc:"уд, 1.3 уд/сек | Цена:",gun:"🔥 Огнестрелка",gunDesc:"HP / 3.4с | Цена:",miner:"⛏️ Шахтёр",minerDesc:"❤️ / 15с | Цена:",goldMiner:"💰 Золотой шахтёр",goldMinerDesc:"🪙 / сек | Цена:",elOnlyOne:"Покупаются раз и навсегда. Активна может быть только одна.",activate:"Активировать",active:"✅ Активно",bought:"Куплено",nowActive:"Сейчас активна",admin:"⚙️ Админ",adminTitle:"🛠️ Админ-панель",password:"Пароль",login:"Войти",give:"Выдать",setDmg:"Установить Damage",spawn:"Заспавнить",shoot:"🏹 Стрелять",throwBomb:"💥 Бросить бомбу",reload:"⏳ Перезарядка:",spearReady:"🗡️ Готово к удару!",spearCD:"⏳ Копьё:",lang:"🌍 Язык",
+    elFireDesc:"20% шанс при ударе: +damage×1.15",elIceDesc:"30% шанс: +монеты и ×1.3 урона",elPoisonDesc:"60% шанс: +damage÷4 урона",elLightDesc:"7% шанс: +damage×1.5 монет",elDemonDesc:"5% шанс: трижды damage×3, задержка 0.24с",elUltraDesc:"15% яд | 35% лёд | 5% демон",elSuperGodDesc:"Все стихии одновременно",
+    elFireName:"🔥 Огонь",elIceName:"🧊 Лёд",elPoisonName:"☠️ Яд",elLightName:"✨ Свет",elDemonName:"😈 Демон",elUltraName:"👑 Ультра Владыка",elSuperGodName:"🌟 Супер-бог",
+    victoryName:"🏆 Победа",victoryDesc:"Финальная цель",
+    hunger:"🍖 Голод",food:"🍖 Еда",foodNote:"Покупай еду чтобы восстановить голод",
+    apple:"🍎 Яблоко",appleDesc:"+5% голода",
+    meat:"🥩 Мясо",meatDesc:"+15% голода | ⚠️ damage÷1.25 на 5с",
+    eat:"Съесть",noFood:"Еда отсутствует. Купи в магазине!",
+    setHunger:"Установить Голод",
+    winTitle:"Ты победил!",winMsg:"Честная победа! Молодец!",
+    loseTitle:"Ты проиграл.",loseMsg:"Играй честно.",
+    starveTitle:"Вы умерли от голода.",starveMsg:"Вы проиграли.",
+    keepPlaying:"Играть дальше",restart:"Заново"}
+};
+let lang="uk";
+function setLang(l){
+  lang=l;
+  const ls=document.getElementById("langScreen");
+  if(ls&&ls.style.display!=="none"){ls.style.display="none";document.getElementById("game").style.display="block";applyLang();spawn();update();startHunger();}
+  else{applyLang();update();}
+}
+function t(k){return T[lang][k]||T.uk[k]||k;}
+function applyLang(){
+  document.querySelector("h1").textContent=t("title");
+  document.getElementById("info").textContent=t("clickInfo");
+  document.getElementById("shopBtn").childNodes[0].textContent=t("shop").replace("🛒 ","🛒 ");
+  $("shopBtn").firstChild.textContent=t("shop");
+  $("tabItems").textContent=t("items");
+  $("tabUpgrades").textContent=t("upgrades");
+  $("tabElements").textContent=t("elements");
+  $("shoot").textContent=t("shoot");
+  $("useBomb").textContent=t("throwBomb");
+  $("adminOpen").textContent=t("admin");
+  $("adminPass").placeholder=t("password");
+  $("adminLoginBtn").textContent=t("login");
+  $("giveBtn").textContent=t("give");
+  $("giveDamageBtn").textContent=t("setDmg");
+  $("spawnAdmin").textContent=t("spawn");
+  // Магазин — предмети
+  document.querySelector("#secItems .shopItem:nth-child(1) b").textContent=t("arrows5");
+  document.querySelector("#secItems .shopItem:nth-child(1) small").textContent=t("arrowsDesc");
+  document.querySelector("#secItems .shopItem:nth-child(2) b").textContent=t("spear5");
+  document.querySelector("#secItems .shopItem:nth-child(2) small").textContent=t("spearDesc");
+  document.querySelector("#secItems .shopItem:nth-child(3) b").textContent=t("bomb");
+  document.querySelector("#secItems .shopItem:nth-child(3) small").textContent=t("bombDesc");
+  document.querySelector("#secItems .shopItem:nth-child(4) b").textContent=t("elemStone");
+  document.querySelector("#secItems .shopItem:nth-child(4) small").textContent=t("elemStoneDesc");
+  // Магазин — покращення
+  document.querySelector("#secUpgrades .shopItem:nth-child(1) b").textContent=t("swordUpg");
+  document.querySelector("#secUpgrades .shopItem:nth-child(2) b").textContent=t("archer");
+  document.querySelector("#secUpgrades .shopItem:nth-child(3) b").textContent=t("gun");
+  document.querySelector("#secUpgrades .shopItem:nth-child(4) b").textContent=t("miner");
+  document.querySelector("#secUpgrades .shopItem:nth-child(5) b").textContent=t("goldMiner");
+  // Стихії — описи і назви
+  document.querySelector("#secElements>div:first-child").textContent=t("elOnlyOne");
+  const elNameKeys=["elFireName","elIceName","elPoisonName","elLightName","elDemonName","elUltraName","elSuperGodName"];
+  const elKeys=["elFireDesc","elIceDesc","elPoisonDesc","elLightDesc","elDemonDesc","elUltraDesc","elSuperGodDesc"];
+  document.querySelectorAll("#secElements .elItem").forEach((item,i)=>{
+    const b=item.querySelector("b");const s=item.querySelector("small");
+    if(b&&elNameKeys[i])b.textContent=t(elNameKeys[i]);
+    if(s&&elKeys[i])s.textContent=t(elKeys[i]);
+  });
+  // Перемога
+  const vn=$("victoryItemName"),vd=$("victoryItemDesc");
+  if(vn)vn.textContent=t("victoryName");
+  if(vd)vd.textContent=t("victoryDesc")+" | 100,000,000 🪙";
+  // Голод і їжа
+  $("hungerLabel").textContent=t("hunger");
+  $("tabFood").textContent=t("food");
+  $("foodShopNote").textContent=t("foodNote");
+  $("appleShopName").textContent=t("apple");
+  $("appleShopDesc").textContent=t("appleDesc");
+  $("meatShopName").textContent=t("meat");
+  $("meatShopDesc").textContent=t("meatDesc");
+  $("foodPanelTitle").textContent=t("food");
+  $("giveHungerBtn").textContent=t("setHunger");
+  // Кнопки купити
+  document.querySelectorAll(".shopItem button:not([id])").forEach(b=>b.textContent=t("buy"));
+  // Адмін заголовок
+  document.querySelector("#admin h2").textContent=t("adminTitle");
+}
+
 let coins=0,arrows=0,stones=0,spears=0,bombs=0,elemStones=0,damage=1,hp=10,maxHp=10,price=15,purchase=0,monsterType="zombie",shootReady=true,cooldown=0;
 let superPowerActive=false,superPowerTimer=null;
+let hunger=100,hungerHitCount=0,hungerTimerStarted=false;
+let foodInv={apple:0,meat:0};
+let meatDebuffTimer=null,meatDebuffActive=false;
 let archerCount=0,archerPrice=100,archerDmg=1,archerTimer=null;
 let gunCount=0,gunPrice=300,gunDmg=2.7,gunTimer=null;
 let minerCount=0,minerPrice=1000,minerRate=1,minerTimer=null;
@@ -216,7 +414,7 @@ let goldMinerCount=0,goldPrice=2500,goldRate=15,goldTimer=null;
 let spearReady=true,spearCooldownLeft=0,spearCooldownTimer=null;
 // Стихії: owned = куплено, active = яка зараз активна (null або 'fire')
 let elOwned={fire:false,ice:false,poison:false,light:false,demon:false,ultra:false,supergod:false},elActive=null;
-let holdStart=null,holdAnim=null,holding=false,adminUnlocked=false;
+let holdStart=null,holdAnim=null,holding=false,adminUnlocked=false,adminUsed=false,bugTestMode=false;
 
 const $=id=>document.getElementById(id);
 const coinsEl=$("coins"),arrowsEl=$("arrows"),stonesEl=$("stones"),spearsEl=$("spears"),bombsEl=$("bombs"),elemStonesEl=$("elemStones"),dmgEl=$("dmg");
@@ -224,10 +422,12 @@ const hpBar=$("hpbar"),hpText=$("hptext"),nameEl=$("name");
 const monster=$("monster"),shoot=$("shoot"),cooldownEl=$("cooldown"),spearcooldownEl=$("spearcooldown");
 const useBomb=$("useBomb");
 const buy=$("buyUpgrade"),buyArrows=$("buyArrows"),buySpear=$("buySpear"),buyBomb=$("buyBomb");
-const buyArcher=$("buyArcher"),buyGun=$("buyGun"),buyMiner=$("buyMiner"),buyGoldMiner=$("buyGoldMiner");
+const buyArcher=$("buyArcher"),buyGun=$("buyGun"),buyMiner=$("buyMiner"),buyGoldMiner=$("buyGoldMiner"),buyVictory=$("buyVictory");
 const shopBtn=$("shopBtn"),shopOverlay=$("shopOverlay"),shopClose=$("shopClose"),shopBadge=$("shopBadge");
-const tabItems=$("tabItems"),tabUpgrades=$("tabUpgrades"),tabElements=$("tabElements");
-const secItems=$("secItems"),secUpgrades=$("secUpgrades"),secElements=$("secElements");
+const tabItems=$("tabItems"),tabUpgrades=$("tabUpgrades"),tabElements=$("tabElements"),tabFood=$("tabFood");
+const secItems=$("secItems"),secUpgrades=$("secUpgrades"),secElements=$("secElements"),secFood=$("secFood");
+const foodBtn=$("foodBtn"),foodOverlay=$("foodOverlay"),foodClose=$("foodClose"),foodBadge=$("foodBadge"),foodList=$("foodList");
+const buyApple=$("buyApple"),buyMeat=$("buyMeat"),giveHungerBtn=$("giveHungerBtn");
 const elFireBtn=$("elFireBtn"),elFireItem=$("elFireItem"),elFireStatus=$("elFireStatus"),elActiveLabel=$("elActiveLabel");
 const elIceBtn=$("elIceBtn"),elIceItem=$("elIceItem"),elIceStatus=$("elIceStatus");
 const elPoisonBtn=$("elPoisonBtn"),elPoisonItem=$("elPoisonItem"),elPoisonStatus=$("elPoisonStatus");
@@ -246,18 +446,31 @@ shopBtn.onclick=()=>shopOverlay.style.display="block";
 shopClose.onclick=()=>shopOverlay.style.display="none";
 shopOverlay.onclick=e=>{if(e.target===shopOverlay)shopOverlay.style.display="none"};
 function switchTab(active){
-  [tabItems,tabUpgrades,tabElements].forEach(t=>t.classList.remove("active"));
-  [secItems,secUpgrades,secElements].forEach(s=>s.classList.remove("active"));
+  [tabItems,tabUpgrades,tabElements,tabFood].forEach(t=>t.classList.remove("active"));
+  [secItems,secUpgrades,secElements,secFood].forEach(s=>s.classList.remove("active"));
   active.tab.classList.add("active");active.sec.classList.add("active");
 }
 tabItems.onclick=()=>switchTab({tab:tabItems,sec:secItems});
 tabUpgrades.onclick=()=>switchTab({tab:tabUpgrades,sec:secUpgrades});
 tabElements.onclick=()=>switchTab({tab:tabElements,sec:secElements});
+tabFood.onclick=()=>switchTab({tab:tabFood,sec:secFood});
+
+foodBtn.onclick=()=>{renderFoodPanel();foodOverlay.style.display="block";}
+foodClose.onclick=()=>foodOverlay.style.display="none";
+foodOverlay.onclick=e=>{if(e.target===foodOverlay)foodOverlay.style.display="none";};
 
 // Адмін
 adminOpen.onclick=()=>{admin.style.display=admin.style.display==="none"?"block":"none"};
-adminLogin.onclick=()=>{if(adminPass.value==="25850"){adminUnlocked=true;adminControls.style.display="block";adminMsg.textContent="OK"}else adminMsg.textContent="Wrong password"};
-give.onclick=()=>{if(!adminUnlocked)return;let v=Math.max(0,Number(giveAmount.value)||0),t=giveType.value;if(t==="coins")coins+=v;else if(t==="arrows")arrows+=v;else if(t==="stones")stones+=v;else if(t==="spears")spears+=v;else if(t==="bombs")bombs+=v;update();adminMsg.textContent="Given: "+v};
+adminLogin.onclick=()=>{
+  const pw=adminPass.value;
+  if(pw==="25850"||pw==="25850bugtest"){
+    adminUnlocked=true;
+    if(pw==="25850bugtest")bugTestMode=true;
+    adminControls.style.display="block";
+    adminMsg.textContent="OK"+(bugTestMode?" [bugtest]":"");
+  } else adminMsg.textContent="Wrong password";
+};
+give.onclick=()=>{if(!adminUnlocked)return;adminUsed=true;let v=Math.max(0,Number(giveAmount.value)||0),t=giveType.value;if(t==="coins")coins+=v;else if(t==="arrows")arrows+=v;else if(t==="stones")stones+=v;else if(t==="spears")spears+=v;else if(t==="bombs")bombs+=v;update();adminMsg.textContent="Given: "+v};
 giveDamage.onclick=()=>{if(!adminUnlocked)return;damage=Math.max(0,Number(setDamage.value)||0);update();adminMsg.textContent="Damage: "+fmt(damage)};
 spawnAdmin.onclick=()=>{if(!adminUnlocked)return;let t=spawnType.value;
 if(t==="zombie"){monsterType="zombie";maxHp=10;hp=10;nameEl.textContent="Зомбі";setColor("#39d353","#39d353")}
@@ -286,6 +499,79 @@ function restoreColor(){
   else if(monsterType==="skeleton")setColor("#aaa","#aaa");
   else setColor("#39d353","#39d353");
 }
+function updateHunger(){
+  const bar=$("hungerBar"),pct=$("hungerPct");
+  if(!bar)return;
+  bar.style.width=hunger+"%";
+  bar.style.background=hunger>50?"#e05555":hunger>20?"#e07700":"#cc0000";
+  pct.textContent=Math.ceil(hunger)+"%";
+  if(hunger<=0){
+    $("shopOverlay").style.display="none";
+    showResult&&showResult("hunger");
+  }
+}
+
+function renderFoodPanel(){
+  const total=foodInv.apple+foodInv.meat;
+  const empty=$("foodEmpty");
+  foodList.innerHTML="";
+  if(total===0){
+    const d=document.createElement("div");
+    d.style.cssText="color:#aaa;text-align:center;padding:20px";
+    d.textContent=t("noFood");
+    foodList.appendChild(d);return;
+  }
+  const foods=[
+    {key:"apple",emoji:"🍎",nameKey:"apple",hunger:5,debuff:false,descKey:"appleDesc"},
+    {key:"meat",emoji:"🥩",nameKey:"meat",hunger:15,debuff:true,descKey:"meatDesc"}
+  ];
+  foods.forEach(f=>{
+    if(!foodInv[f.key])return;
+    const row=document.createElement("div");
+    row.style.cssText="display:flex;align-items:center;justify-content:space-between;background:#242424;border:2px solid #383838;border-radius:12px;padding:10px 14px;margin:6px 0";
+    const info=document.createElement("div");
+    info.innerHTML=`<b>${f.emoji} ${t(f.nameKey)}</b> <span style="color:#aaa;font-size:13px">x${foodInv[f.key]}</span><br><small style="color:#aaa">${t(f.descKey)}</small>`;
+    const btn=document.createElement("button");
+    btn.textContent=t("eat");
+    btn.style.cssText="border:0;border-radius:9px;padding:8px 14px;background:#277cff;color:#fff;font-size:14px;font-weight:bold;cursor:pointer";
+    btn.onclick=()=>eatFood(f.key,f.hunger,f.debuff);
+    row.appendChild(info);row.appendChild(btn);
+    foodList.appendChild(row);
+  });
+}
+
+function eatFood(key,hungerAdd,hasDebuff){
+  if(!foodInv[key])return;
+  foodInv[key]--;
+  hunger=Math.min(100,hunger+hungerAdd);
+  updateHunger();
+  updateFoodBadge();
+  if(hasDebuff){
+    const realDmg=damage;
+    damage=damage/1.25;
+    if(meatDebuffTimer)clearTimeout(meatDebuffTimer);
+    meatDebuffActive=true;
+    meatDebuffTimer=setTimeout(()=>{damage=realDmg;meatDebuffActive=false;update();},5000);
+    update();
+  }
+  renderFoodPanel();
+}
+
+function updateFoodBadge(){
+  const total=foodInv.apple+foodInv.meat;
+  foodBadge.textContent=total;
+  foodBadge.style.display=total>0?"inline-block":"none";
+}
+function startHunger(){
+  if(hungerTimerStarted)return;
+  hungerTimerStarted=true;
+  setInterval(()=>{if(hunger>0){hunger=Math.max(0,hunger-1);updateHunger();}},15000);
+}
+function hungerHit(){
+  hungerHitCount++;
+  if(hungerHitCount>=20){hungerHitCount=0;if(hunger>0){hunger=Math.max(0,hunger-1);updateHunger();}}
+}
+
 function spawn(){let r=Math.random();
 if(r<.000332){monsterType="ftitan";maxHp=50000;hp=50000;nameEl.textContent="Вогняний Титан";setColor("linear-gradient(135deg,#8b1a00,#ff4400)","#ff4400")}
 else if(r<.000987){monsterType="dragon";maxHp=20000;hp=20000;nameEl.textContent="Дракон";setColor("#5c0000","#8b0000")}
@@ -301,9 +587,9 @@ else{monsterType="zombie";maxHp=10;hp=10;nameEl.textContent="Зомбі";setColo
 function update(){
   coinsEl.textContent=Math.round(coins);arrowsEl.textContent=Math.round(arrows);stonesEl.textContent=Math.round(stones);spearsEl.textContent=Math.round(spears);bombsEl.textContent=Math.round(bombs);elemStonesEl.textContent=Math.round(elemStones);dmgEl.textContent=fmt(damage);
   hpText.textContent=fmt(Math.max(0,hp))+" / "+maxHp+" HP";hpBar.style.width=Math.max(0,hp/maxHp*100)+"%";
-  shoot.disabled=!shootReady||arrows<1;cooldownEl.textContent=shootReady?"":"⏳ Перезарядка: "+cooldown+"с";
+  shoot.disabled=!shootReady||arrows<1;cooldownEl.textContent=shootReady?"":t("reload")+cooldown+"с";
   useBomb.disabled=bombs<1;
-  spearcooldownEl.textContent=spearReady?(spears>0?"🗡️ Готово до удару!":""):"⏳ Спис: "+spearCooldownLeft+"с";
+  spearcooldownEl.textContent=spearReady?(spears>0?t("spearReady"):""):t("spearCD")+spearCooldownLeft+"с";
   // Магазин — предмети
   buyArrows.disabled=coins<50;
   buySpear.disabled=coins<150;
@@ -315,6 +601,7 @@ function update(){
   $("gunPrice").textContent=gunPrice;$("gunDmg").textContent=fmt(gunDmg);buyGun.disabled=coins<gunPrice||stones<3;
   $("minerPrice").textContent=minerPrice;$("minerRate").textContent=fmt(minerRate);buyMiner.disabled=coins<minerPrice;
   $("goldPrice").textContent=goldPrice;$("goldRate").textContent=fmt(goldRate);buyGoldMiner.disabled=coins<goldPrice;
+  buyVictory.disabled=coins<100000000;
   // Стихії — оновлення кнопок
   updateElements();
   // Бейдж магазину
@@ -333,8 +620,12 @@ function update(){
   if(!elOwned.light&&coins>=60000)badge++;
   if(!elOwned.demon&&coins>=100000)badge++;
   if(!elOwned.ultra&&coins>=150000)badge++;
+  buyApple.disabled=coins<40;buyMeat.disabled=coins<100;
   if(!elOwned.supergod&&coins>=250000&&elemStones>=50)badge++;
+  if(coins>=40)badge++;  // яблуко
+  if(coins>=100)badge++; // м'ясо
   shopBadge.textContent=badge;shopBadge.style.display=badge>0?"inline-block":"none";
+  updateFoodBadge();
 }
 
 function updateElements(){
@@ -388,7 +679,7 @@ function kill(){
   else if(monsterType==="knight"){coins+=Math.floor(Math.random()*30)+27;arrows+=Math.floor(Math.random()*3)+1}
   else if(monsterType==="slime")coins+=Math.floor(Math.random()*17)+7;
   else if(monsterType==="skeleton")coins+=Math.floor(Math.random()*6)+4;
-  else coins+=Math.floor(Math.random()*3)+2;
+  else{coins+=Math.floor(Math.random()*3)+2;if(Math.random()<.033){hunger=Math.max(0,hunger-3);updateHunger();}}
   spawn()
 }
 function flashMonster(color){
@@ -470,7 +761,7 @@ function applyElementalSword(baseDmg){
   else if(active==="demon"&&Math.random()<.05){setTimeout(demonStrike,100);}
   return d*dmgMult;
 }
-function hit(x){hp-=x;if(hp<=0)kill();update()}
+function hit(x){hp-=x;if(hp<=0)kill();hungerHit();update()}
 
 // Спис
 function startHold(){
@@ -561,5 +852,39 @@ buyGoldMiner.onclick=()=>{
   update();
 }
 
-spawn();update();
+function showResult(type){
+  const rs=$("resultScreen"),title=$("resultTitle"),msg=$("resultMsg"),btnC=$("btnContinue"),btnR=$("btnRestart");
+  if(type==="hunger"){
+    title.textContent="💀 "+t("starveTitle");
+    msg.textContent=t("starveMsg");
+    btnC.style.display="none";
+  } else if(type===true){
+    title.textContent="🏆 "+t("winTitle");
+    msg.textContent=t("winMsg");
+    btnC.style.display="inline-block";
+    btnC.textContent=t("keepPlaying");
+  } else {
+    title.textContent="😞 "+t("loseTitle");
+    msg.textContent=t("loseMsg");
+    btnC.style.display="none";
+  }
+  btnR.textContent=t("restart");
+  rs.classList.add("show");
+}
+function closeResult(){$("resultScreen").classList.remove("show");}
+function restartGame(){location.reload();}
+
+buyApple.onclick=()=>{if(coins<40)return;coins-=40;foodInv.apple++;updateFoodBadge();update();}
+buyMeat.onclick=()=>{if(coins<100)return;coins-=100;foodInv.meat++;updateFoodBadge();update();}
+giveHungerBtn.onclick=()=>{if(!adminUnlocked)return;hunger=Math.max(0,Math.min(100,Number($("setHunger").value)||0));updateHunger();adminMsg.textContent="Hunger: "+hunger+"%";}
+
+buyVictory.onclick=()=>{
+  if(coins<100000000)return;
+  coins-=100000000;
+  $("shopOverlay").style.display="none";
+  if(!adminUsed||bugTestMode)showResult(true);
+  else showResult(false);
+}
+
+spawn();update();startHunger();
 </script></body></html>
