@@ -1,0 +1,1601 @@
+<!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>Monster Clicker 1.6</title><style>
+*{box-sizing:border-box}body{margin:0;background:#151515;color:#fff;font-family:Arial,sans-serif;text-align:center}
+#langScreen{position:fixed;inset:0;background:#151515;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+#langScreen h2{font-size:26px;margin:0 0 10px}
+.langBtn{border:0;border-radius:14px;padding:16px 36px;font-size:20px;font-weight:bold;cursor:pointer;background:#222;color:#fff;border:2px solid #444;transition:.15s;width:220px}
+.langBtn:hover{background:#333;border-color:#888}
+#resultScreen{display:none;position:fixed;inset:0;background:#000d;z-index:998;align-items:center;justify-content:center;flex-direction:column;gap:20px}
+#resultScreen.show{display:flex}
+#resultBox{background:#1a1a1a;border:2px solid #555;border-radius:20px;padding:36px 30px;text-align:center;max-width:340px}
+#resultTitle{font-size:32px;font-weight:bold;margin-bottom:10px}
+#resultMsg{font-size:16px;color:#aaa;margin-bottom:24px}
+.resultBtn{border:0;border-radius:12px;padding:13px 28px;font-size:17px;font-weight:bold;cursor:pointer;margin:5px}
+#btnContinue{background:#277cff;color:#fff}
+#btnRestart{background:#444;color:#fff}
+#game{max-width:560px;margin:auto;padding:18px}h1{margin:5px 0 18px}
+#stats{font-size:19px;line-height:1.8}
+#name{font-size:24px;font-weight:bold;margin:8px}
+#hpbox{width:90%;height:24px;margin:8px auto 14px;background:#333;border-radius:14px;overflow:hidden}
+#hpbar{height:100%;width:100%;transition:.1s}
+#hptext{font-size:16px}
+#monster{position:relative;width:180px;height:180px;margin:10px auto;border-radius:50%;background:#39d353;cursor:pointer;box-shadow:0 0 30px #39d353;transition:transform .08s ease,background .1s,box-shadow .1s;user-select:none;flex-shrink:0}
+#fire{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:72px;z-index:3}
+#spearcharge{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);width:90%;height:6px;background:#333;border-radius:4px;overflow:hidden;display:none}
+#spearchargebar{height:100%;width:0%;background:#ffe000;border-radius:4px;transition:none;box-shadow:0 0 6px #ffe000}
+#damage{font-size:18px;margin:10px}
+.actbtn{border:0;border-radius:10px;padding:12px 18px;margin:5px;background:#277cff;color:#fff;font-size:16px;font-weight:bold;cursor:pointer}
+.actbtn:disabled{opacity:.45}
+#cooldown,#spearcooldown,#info{color:#aaa;font-size:14px;margin-top:5px}
+/* Магазин */
+#shopBtn{border:0;border-radius:12px;padding:13px 30px;margin:10px 5px;background:linear-gradient(90deg,#e6a000,#ff6a00);color:#fff;font-size:18px;font-weight:bold;cursor:pointer;box-shadow:0 0 18px #e6a00088;position:relative}
+#shopBadge{display:none;position:absolute;top:-7px;right:-7px;background:#e02020;color:#fff;font-size:13px;font-weight:bold;border-radius:50%;min-width:22px;height:22px;line-height:22px;padding:0 5px;box-shadow:0 0 6px #0008}
+#shopOverlay{display:none;position:fixed;inset:0;background:#000a;z-index:100;overflow-y:auto}
+#shopModal{background:#1a1a1a;border:2px solid #555;border-radius:18px;max-width:520px;margin:20px auto;padding:18px;position:relative;max-height:80vh;overflow-y:auto}
+#shopModal h2{margin:4px 0 14px;font-size:22px}
+#shopClose{position:absolute;top:12px;right:16px;background:none;border:0;color:#aaa;font-size:26px;cursor:pointer;line-height:1}
+.tabs{display:flex;gap:8px;margin-bottom:14px}
+.tab{flex:1;border:0;border-radius:10px;padding:10px;font-size:16px;font-weight:bold;cursor:pointer;background:#333;color:#aaa;transition:.15s}
+.tab.active{background:#277cff;color:#fff}
+.shopSection{display:none}.shopSection.active{display:block}
+.shopItem{background:#242424;border:2px solid #383838;border-radius:12px;margin:8px 0;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left}
+.shopItem .info{flex:1}.shopItem .info b{font-size:16px}.shopItem .info small{color:#aaa;font-size:13px;display:block;margin-top:2px}
+.shopItem button{border:0;border-radius:9px;padding:9px 14px;background:#277cff;color:#fff;font-size:14px;font-weight:bold;cursor:pointer;white-space:nowrap}
+.shopItem button:disabled{opacity:.4}
+/* Адмін */
+#adminOpen{border:0;border-radius:10px;padding:10px 16px;margin:5px;background:#444;color:#fff;font-size:14px;cursor:pointer}
+/* Стихії */
+.elItem{background:#242424;border:2px solid #383838;border-radius:12px;margin:8px 0;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;transition:border-color .2s}
+.elItem.owned{border-color:#555}
+.elItem.active-el{border-color:#ff6a00;box-shadow:0 0 12px #ff6a0066}
+.elItem.active-el-ice{border-color:#5bcfff;box-shadow:0 0 12px #5bcfff66}
+.elItem.active-el-poison{border-color:#7fff00;box-shadow:0 0 12px #7fff0066}
+.elItem.active-el-light{border-color:#ffff88;box-shadow:0 0 12px #ffff8866}
+.elItem.active-el-demon{border-color:#cc0000;box-shadow:0 0 12px #cc000066}
+.elItem.active-el-ultra{border-color:#cc44ff;box-shadow:0 0 18px #cc44ff88}
+.elItem.active-el-supergod{border-color:#ffd700;box-shadow:0 0 22px #ffd70099}
+.elItem .info{flex:1}.elItem .info b{font-size:16px}.elItem .info small{color:#aaa;font-size:13px;display:block;margin-top:2px}
+.elItem .info .elStatus{font-size:12px;margin-top:4px;font-weight:bold}
+.elBtn{border:0;border-radius:9px;padding:9px 14px;background:#277cff;color:#fff;font-size:14px;font-weight:bold;cursor:pointer;white-space:nowrap;min-width:90px}
+.elBtn:disabled{opacity:.4}
+.elBtn.activate{background:#666}
+.elBtn.active-btn{background:#c05000;cursor:default}
+.elBtn.active-btn-ice{background:#1a6fa0;cursor:default}
+#elActiveLabel{font-size:14px;color:#ff9944;font-weight:bold;margin-bottom:8px;min-height:20px}
+</style></head><body>
+<div id="resultScreen">
+  <div id="resultBox">
+    <div id="resultTitle"></div>
+    <div id="resultMsg"></div>
+    <button class="resultBtn" id="btnContinue" onclick="closeResult()"></button>
+    <button class="resultBtn" id="btnRestart" onclick="restartGame()"></button>
+  </div>
+</div>
+<div id="langScreen">
+  <h2>🌍 Вибери мову / Choose language / Выберите язык</h2>
+  <button class="langBtn" onclick="setLang('uk')">🇺🇦 Українська</button>
+  <button class="langBtn" onclick="setLang('en')">🇬🇧 English</button>
+  <button class="langBtn" onclick="setLang('ru')">🇷🇺 Русский</button>
+</div>
+
+<div id="winScreen" style="display:none;position:fixed;inset:0;background:#151515;z-index:998;flex-direction:column;align-items:center;justify-content:center;gap:20px">
+  <div style="font-size:72px">🏆</div>
+  <h2 id="winTitle" style="font-size:32px;margin:0;color:#ffd700"></h2>
+  <p id="winSub" style="color:#aaa;font-size:18px;margin:0"></p>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+    <button id="winContinue" class="langBtn" style="background:#277cff;border-color:#277cff;display:none"></button>
+    <button id="winRestart" class="langBtn" style="background:#444;border-color:#666"></button>
+  </div>
+</div>
+
+<div id="loseScreen" style="display:none;position:fixed;inset:0;background:#151515;z-index:998;flex-direction:column;align-items:center;justify-content:center;gap:20px">
+  <div style="font-size:72px">😈</div>
+  <h2 id="loseTitle" style="font-size:28px;margin:0;color:#f44"></h2>
+  <button id="loseRestart" class="langBtn" style="background:#444;border-color:#666"></button>
+</div>
+<div id="game" style="display:none">
+<div id="hungerWrap" style="width:90%;margin:6px auto 2px">
+  <div style="display:flex;justify-content:space-between;font-size:13px;color:#e88;margin-bottom:3px">
+    <span id="hungerLabel">🍖 Голод</span><span id="hungerPct">100%</span>
+  </div>
+  <div style="height:10px;background:#333;border-radius:8px;overflow:hidden">
+    <div id="hungerBar" style="height:100%;width:100%;background:#e05555;border-radius:8px;transition:width .4s"></div>
+  </div>
+</div>
+<div style="width:90%;margin:4px auto 6px;cursor:pointer" onclick="showXPInfo()">
+  <div style="display:flex;justify-content:space-between;font-size:13px;color:#8f8;margin-bottom:3px">
+    <span id="xpLabel">⭐ Рівень <b id="xpLevel">1</b></span><span id="xpPct">0 / 1000 XP</span>
+  </div>
+  <div style="height:10px;background:#333;border-radius:8px;overflow:hidden">
+    <div id="xpBar" style="height:100%;width:0%;background:#4caf50;border-radius:8px;transition:width .3s"></div>
+  </div>
+</div>
+<h1>👹 Monster Clicker</h1>
+<div id="stats">🪙 <b id="coins">0</b> &nbsp;🏹 <b id="arrows">0</b> &nbsp;❤️ <b id="stones">0</b><br>🗡️ <b id="spears">0</b> &nbsp;💣 <b id="bombs">0</b> &nbsp;💎 <b id="elemStones">0</b></div>
+<div id="damage">⚔️ Damage: <b id="dmg">1</b></div>
+<div id="name">Зомбі</div>
+<div id="hpbox"><div id="hpbar"></div></div>
+<div id="hptext">10 / 10 HP</div>
+<div style="display:flex;align-items:center;justify-content:center;gap:12px">
+  <div style="display:flex;flex-direction:column;gap:8px;align-self:center">
+    <button id="tradeBtn" style="border:0;border-radius:14px;padding:10px 14px;font-size:28px;background:#2a2a2a;cursor:pointer;border:2px solid #444" title="Обмін">💱</button>
+    <button id="spellBtn" style="border:0;border-radius:14px;padding:10px 14px;font-size:28px;background:#2a2a2a;cursor:pointer;border:2px solid #444;position:relative" title="Заклинання">🔮</button>
+    <button id="armyBtn" style="border:0;border-radius:14px;padding:10px 14px;font-size:28px;background:#2a2a2a;cursor:pointer;border:2px solid #5a3e00" title="Армія">🛡️</button>
+  </div>
+  <div id="monster" style="flex-shrink:0"><div id="spearcharge"><div id="spearchargebar"></div></div></div>
+  <div style="display:flex;flex-direction:column;gap:8px;align-self:center">
+    <button id="minigameBtn" style="border:0;border-radius:14px;padding:10px 14px;font-size:28px;background:#2a2a2a;cursor:pointer;border:2px solid #444" title="Міні-гра">🎮</button>
+    <button id="giftBtn" style="border:0;border-radius:14px;padding:10px 14px;font-size:28px;background:#2a2a2a;cursor:pointer;border:2px solid #444" title="Подарунки">🎁</button>
+    <button id="bossBtn" style="border:0;border-radius:14px;padding:10px 14px;font-size:28px;background:#2a2a2a;cursor:pointer;border:2px solid #8b0000" title="Боси">💀</button>
+    <button id="foodBtn" style="border:0;border-radius:14px;padding:10px 14px;font-size:28px;background:#2a2a2a;cursor:pointer;border:2px solid #444;position:relative" title="Їжа">🍖<span id="foodBadge" style="display:none;position:absolute;top:-6px;right:-6px;background:#e05555;color:#fff;font-size:12px;font-weight:bold;border-radius:50%;min-width:18px;height:18px;line-height:18px;padding:0 4px"></span></button>
+  </div>
+</div>
+<div id="superPowerWrap" style="display:none;margin-top:-6px;margin-bottom:4px">
+  <div style="font-size:32px;margin-bottom:4px">✨</div>
+  <div style="width:120px;height:8px;background:#333;border-radius:6px;margin:0 auto;overflow:hidden">
+    <div id="superPowerBar" style="height:100%;width:100%;background:#ffe000;border-radius:6px;box-shadow:0 0 8px #ffe000"></div>
+  </div>
+</div>
+<button class="actbtn" id="shoot">🏹 Стріляти</button>
+<button class="actbtn" id="useBomb">💥 Кинути бомбу</button>
+<div id="cooldown"></div><div id="spearcooldown"></div>
+<br>
+<button id="shopBtn">🛒 Магазин<span id="shopBadge"></span></button>
+<button id="adminOpen">⚙️ Адмін</button>
+
+<!-- Магазин -->
+<div id="shopOverlay">
+<div id="shopModal">
+  <button id="shopClose">✕</button>
+  <h2>🛒 Магазин</h2>
+  <div class="tabs">
+    <button class="tab active" id="tabItems">🎒 Предмети</button>
+    <button class="tab" id="tabUpgrades">⬆️ Покращення</button>
+    <button class="tab" id="tabElements">🔮 Стихії</button>
+    <button class="tab" id="tabFood">🍖 Їжа</button>
+  </div>
+  <!-- Предмети -->
+  <div class="shopSection active" id="secItems">
+    <div class="shopItem">
+      <div class="info"><b>🏹 Стріли (×5)</b><small>Урон: damage × 4.2 | Перезарядка: 10с</small></div>
+      <button id="buyArrows">50 🪙</button>
+    </div>
+    <div class="shopItem">
+      <div class="info"><b>🗡️ Спис (×5)</b><small>Урон: damage × 1.4 | Затримай 1.2с для удару</small></div>
+      <button id="buySpear">150 🪙</button>
+    </div>
+    <div class="shopItem">
+      <div class="info"><b>💣 Бомба</b><small>Урон: damage × 1.7 | Миттєво</small></div>
+      <button id="buyBomb">60 🪙</button>
+    </div>
+    <div class="shopItem">
+      <div class="info"><b>💎 Камінь стихії</b><small>Потрібен для Супер-бога</small></div>
+      <button id="buyElemStone">15 ❤️</button>
+    </div>
+  </div>
+  <!-- Покращення -->
+  <div class="shopSection" id="secUpgrades">
+    <div class="shopItem">
+      <div class="info"><b>⚔️ Покращення меча</b><small>+damage | Ціна: <span id="buyPriceLabel">15</span> 🪙</small></div>
+      <button id="buyUpgrade">Купити</button>
+    </div>
+    <div class="shopItem">
+      <div class="info"><b>🏹 Лучник</b><small>Урон: <span id="archerDmg">1</span>/уд, 1.3 уд/сек | Ціна: <span id="archerPrice">100</span> 🪙</small></div>
+      <button id="buyArcher">Купити</button>
+    </div>
+    <div class="shopItem">
+      <div class="info"><b>🔥 Вогнестрілька</b><small>Урон: <span id="gunDmg">2.7</span>/3.4с | Ціна: <span id="gunPrice">300</span> 🪙 + 3 ❤️</small></div>
+      <button id="buyGun">Купити</button>
+    </div>
+    <div class="shopItem">
+      <div class="info"><b>⛏️ Шахтар</b><small><span id="minerRate">1</span> ❤️ / 15с | Ціна: <span id="minerPrice">1000</span> 🪙</small></div>
+      <button id="buyMiner">Купити</button>
+    </div>
+    <div class="shopItem">
+      <div class="info"><b>💰 Золотий майнер</b><small><span id="goldRate">15</span> 🪙 / сек | Ціна: <span id="goldPrice">2500</span> 🪙</small></div>
+      <button id="buyGoldMiner">Купити</button>
+    </div>
+    <div class="shopItem" style="border-color:#ffd700">
+      <div class="info"><b id="victoryItemName">🏆 Перемога</b><small id="victoryItemDesc">100,000,000 🪙</small></div>
+      <button id="buyVictory">Купити</button>
+    </div>
+    <div class="shopItem" id="cannonItem">
+      <div class="info"><b id="cannonShopName">💣 Гармата</b><small id="cannonShopDesc">30 урона / 20с | Ціна: <span id="cannonPriceLabel">5000</span> 🪙</small><br><small id="cannonLockLabel" style="color:#f80;display:none">🔒 Рівень 4</small></div>
+      <button id="buyCannon">Купити</button>
+    </div>
+  </div>
+  <!-- Стихії -->
+  <div class="shopSection" id="secElements">
+    <div style="color:#aaa;font-size:13px;margin-bottom:6px">Купуються раз і назавжди. Активна може бути лише одна.</div>
+    <div id="elActiveLabel"></div>
+    <div class="elItem" id="elFireItem">
+      <div class="info">
+        <b>🔥 Вогонь</b>
+        <small>Після удару мечем — 20% шанс завдати ще ×1.15 damage</small>
+        <span class="elStatus" id="elFireStatus"></span>
+      </div>
+      <button class="elBtn" id="elFireBtn">15000 🪙</button>
+    </div>
+    <div class="elItem" id="elIceItem">
+      <div class="info">
+        <b>🧊 Лід</b>
+        <small>При ударі 30% шанс: отримати damage÷4 монет + нанести ×1.3 damage</small>
+        <span class="elStatus" id="elIceStatus"></span>
+      </div>
+      <button class="elBtn" id="elIceBtn">25000 🪙</button>
+    </div>
+    <div class="elItem" id="elPoisonItem">
+      <div class="info">
+        <b>☠️ Отрута</b>
+        <small>При ударі 60% шанс нанести додатковий урон (damage÷4)</small>
+        <span class="elStatus" id="elPoisonStatus"></span>
+      </div>
+      <button class="elBtn" id="elPoisonBtn">40000 🪙</button>
+    </div>
+    <div class="elItem" id="elLightItem">
+      <div class="info">
+        <b>✨ Світло</b>
+        <small>При ударі 7% шанс отримати damage×1.5 монет</small>
+        <span class="elStatus" id="elLightStatus"></span>
+      </div>
+      <button class="elBtn" id="elLightBtn">60000 🪙</button>
+    </div>
+    <div class="elItem" id="elDemonItem">
+      <div class="info">
+        <b>😈 Демон</b>
+        <small>5% шанс: тричі нанести damage×3 з затримкою 0.24с</small>
+        <span class="elStatus" id="elDemonStatus"></span>
+      </div>
+      <button class="elBtn" id="elDemonBtn">100000 🪙</button>
+    </div>
+    <div class="elItem" id="elUltraItem">
+      <div class="info">
+        <b>👑 Ультра Володар</b>
+        <small>15% отрута | 35% лід | 5% демон — при кожному ударі</small>
+        <span class="elStatus" id="elUltraStatus"></span>
+      </div>
+      <button class="elBtn" id="elUltraBtn">150000 🪙</button>
+    </div>
+    <div class="elItem" id="elSuperGodItem">
+      <div class="info">
+        <b>🌟 Супер-бог</b>
+        <small>250000 🪙 + 50 💎 | Всі ефекти стихій одночасно</small>
+        <span class="elStatus" id="elSuperGodStatus"></span>
+      </div>
+      <button class="elBtn" id="elSuperGodBtn">250000 🪙</button>
+    </div>
+  </div>
+  <!-- Їжа -->
+  <div class="shopSection" id="secFood">
+    <div style="color:#aaa;font-size:13px;margin-bottom:8px" id="foodShopNote">Купуй їжу щоб відновити голод</div>
+    <div class="shopItem">
+      <div class="info"><b id="appleShopName">🍎 Яблуко</b><small id="appleShopDesc">+5% голоду</small></div>
+      <button id="buyApple">40 🪙</button>
+    </div>
+    <div class="shopItem">
+      <div class="info"><b id="meatShopName">🥩 М'ясо</b><small id="meatShopDesc">+15% голоду | ⚠️ damage÷1.25 на 5с</small></div>
+      <button id="buyMeat">100 🪙</button>
+    </div>
+    <div class="shopItem">
+      <div class="info"><b id="pizzaShopName">🍕 Піца</b><small id="pizzaShopDesc">+20% голоду | 💰 +10% доходу на 30с</small></div>
+      <button id="buyPizza">250 🪙</button>
+    </div>
+    <div class="shopItem">
+      <div class="info"><b id="bananaShopName">🍌 Банан</b><small id="bananaShopDesc">+9% голоду | ⚔️ +15% damage на 10с | ⚠️ -2% доходу на 10с</small></div>
+      <button id="buyBanana">60 🪙</button>
+    </div>
+    <div class="shopItem">
+      <div class="info"><b id="weirdFruitShopName">🍈 Дивний фрукт</b><small id="weirdFruitShopDesc">+30% голоду | ❄️ голод не зменшується 20с</small></div>
+      <button id="buyWeirdFruit">300 🪙</button>
+    </div>
+    <div class="shopItem">
+      <div class="info"><b id="watermelonShopName">🍉 Кавун</b><small id="watermelonShopDesc">+50% голоду | 🛒 -20% ціни на 40с</small></div>
+      <button id="buyWatermelon">500 🪙</button>
+    </div>
+    <div class="shopItem">
+      <div class="info"><b id="toxicShopName">🍓 Токсична полуниця</b><small id="toxicShopDesc">+5% голоду | ⚠️ швидкість голоду +15% на 10с</small></div>
+      <button id="buyToxic">20 🪙</button>
+    </div>
+    <div class="shopItem">
+      <div class="info"><b id="pineappleShopName">🍍 Ананас</b><small id="pineappleShopDesc">+70% голоду | 🔥 стихія вогню на 15с</small></div>
+      <button id="buyPineapple">400 🪙</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Міні-гра -->
+<div id="mgOverlay" style="display:none;position:fixed;inset:0;background:#000d;z-index:200;overflow:hidden">
+<div style="background:#111;border:2px solid #4a4;border-radius:18px;max-width:400px;width:95%;margin:20px auto;padding:16px;position:relative">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <div>
+      <b style="font-size:18px">🎮 Міні-гра</b>
+      <span style="color:#aaa;font-size:14px;margin-left:10px">⭐ Рекорд: <b id="mgRecord">0</b></span>
+    </div>
+    <button id="mgClose" style="border:0;background:none;color:#aaa;font-size:24px;cursor:pointer">✕</button>
+  </div>
+  <div style="color:#aaa;font-size:13px;margin-bottom:8px">
+    🪙 Нарахується: <b id="mgCoins">0</b> | 💥 Damage: <b id="mgDmgLabel">1</b>
+  </div>
+  <canvas id="mgCanvas" width="368" height="320" style="background:#1a1a1a;border-radius:10px;display:block;cursor:crosshair;touch-action:none"></canvas>
+  <div id="mgStatus" style="text-align:center;margin-top:10px;font-size:15px;color:#8f8"></div>
+  <div style="text-align:center;margin-top:8px">
+    <button id="mgStartBtn" style="border:0;border-radius:10px;padding:10px 28px;background:#277cff;color:#fff;font-size:16px;font-weight:bold;cursor:pointer">▶ Старт</button>
+  </div>
+</div>
+</div>
+
+<!-- Панель обміну -->
+<div id="tradeOverlay" style="display:none;position:fixed;inset:0;background:#000a;z-index:100;overflow-y:auto">
+<div style="background:#1a1a1a;border:2px solid #00bcd4;border-radius:18px;max-width:360px;margin:40px auto;padding:18px;position:relative">
+  <button id="tradeClose" style="position:absolute;top:12px;right:16px;background:none;border:0;color:#aaa;font-size:26px;cursor:pointer">2715</button>
+  <h2 style="margin:4px 0 14px"><!-- Панель подарунків -->#x1F4B1; 041e0431043c0456043d</h2>
+  <div id="tradeList"></div>
+</div>
+</div>
+
+<!-- Панель подарунків -->
+<div id="giftOverlay" style="display:none;position:fixed;inset:0;background:#000a;z-index:100;overflow-y:auto">
+<div style="background:#1a1a1a;border:2px solid #c8a020;border-radius:18px;max-width:360px;margin:40px auto;padding:18px;position:relative">
+  <button id="giftClose" style="position:absolute;top:12px;right:16px;background:none;border:0;color:#aaa;font-size:26px;cursor:pointer">✕</button>
+  <h2 style="margin:4px 0 14px">🎁 Подарунки</h2>
+  <div id="giftList"></div>
+</div>
+</div>
+
+<!-- XP інфо -->
+<div id="xpInfoOverlay" style="display:none;position:fixed;inset:0;background:#000a;z-index:100;align-items:center;justify-content:center">
+<div style="background:#1a1a1a;border:2px solid #4caf50;border-radius:18px;max-width:340px;width:90%;padding:20px;position:relative;text-align:left">
+  <button onclick="$('xpInfoOverlay').style.display='none'" style="position:absolute;top:12px;right:16px;background:none;border:0;color:#aaa;font-size:26px;cursor:pointer">✕</button>
+  <h2 style="margin:4px 0 12px;color:#4caf50">⭐ Рівень <span id="xpInfoLevel"></span></h2>
+  <div id="xpInfoContent"></div>
+</div>
+</div>
+
+<!-- Панель подарунків -->
+<div id="giftOverlay" style="display:none;position:fixed;inset:0;background:#000a;z-index:100;overflow-y:auto">
+<div style="background:#1a1a1a;border:2px solid #e8c060;border-radius:18px;max-width:360px;margin:40px auto;padding:18px;position:relative">
+  <button id="giftClose" style="position:absolute;top:12px;right:16px;background:none;border:0;color:#aaa;font-size:26px;cursor:pointer">✕</button>
+  <h2 style="margin:4px 0 14px">🎁 Подарунки</h2>
+  <div id="giftList"></div>
+</div>
+</div>
+
+<!-- Панель армії -->
+<div id="armyOverlay" style="display:none;position:fixed;inset:0;background:#000a;z-index:100;overflow-y:auto">
+<div style="background:#1a1a1a;border:2px solid #5a3e00;border-radius:18px;max-width:380px;margin:40px auto;padding:18px;position:relative">
+  <button id="armyClose" style="position:absolute;top:12px;right:16px;background:none;border:0;color:#aaa;font-size:26px;cursor:pointer">✕</button>
+  <h2 style="margin:4px 0 14px">🛡️ Армія</h2>
+  <div id="armyList"></div>
+</div>
+</div>
+
+<!-- Панель заклинань -->
+<div id="spellOverlay" style="display:none;position:fixed;inset:0;background:#000a;z-index:100;overflow-y:auto">
+<div style="background:#1a1a1a;border:2px solid #6a0dad;border-radius:18px;max-width:380px;margin:40px auto;padding:18px;position:relative">
+  <button id="spellClose" style="position:absolute;top:12px;right:16px;background:none;border:0;color:#aaa;font-size:26px;cursor:pointer">✕</button>
+  <h2 style="margin:4px 0 14px">🔮 Заклинання</h2>
+  <div id="spellList"></div>
+</div>
+</div>
+
+<!-- Панель босів -->
+<div id="bossOverlay" style="display:none;position:fixed;inset:0;background:#000a;z-index:100;overflow-y:auto">
+<div style="background:#1a1a1a;border:2px solid #8b0000;border-radius:18px;max-width:360px;margin:40px auto;padding:18px;position:relative">
+  <button id="bossClose" style="position:absolute;top:12px;right:16px;background:none;border:0;color:#aaa;font-size:26px;cursor:pointer">✕</button>
+  <h2 id="bossPanelTitle" style="margin:4px 0 14px">💀 Боси</h2>
+  <div id="bossList"></div>
+</div>
+</div>
+
+<!-- Панель їжі -->
+<div id="foodOverlay" style="display:none;position:fixed;inset:0;background:#000a;z-index:100;overflow-y:auto">
+<div style="background:#1a1a1a;border:2px solid #555;border-radius:18px;max-width:360px;margin:40px auto;padding:18px;position:relative">
+  <button id="foodClose" style="position:absolute;top:12px;right:16px;background:none;border:0;color:#aaa;font-size:26px;cursor:pointer">✕</button>
+  <h2 id="foodPanelTitle" style="margin:4px 0 14px">🍖 Їжа</h2>
+  <div id="foodList"><div style="color:#aaa;text-align:center;padding:20px" id="foodEmpty">Їжа відсутня. Купи у магазині!</div></div>
+</div>
+</div>
+
+<!-- Адмін-панель -->
+<div id="admin" style="display:none;background:#202020;border:2px solid #555;border-radius:12px;margin-top:14px;padding:14px">
+<h2>🛠️ Адмін-панель</h2>
+<input id="adminPass" type="password" placeholder="Пароль" style="padding:10px;border-radius:8px;border:0;margin:5px;width:180px">
+<button class="actbtn" id="adminLoginBtn">Увійти</button>
+<div id="adminControls" style="display:none"><hr>
+<input id="giveAmount" type="number" value="100" min="0" style="padding:10px;width:120px;border-radius:8px;border:0">
+<select id="giveType" style="padding:10px;border-radius:8px">
+<option value="coins">🪙 Монети</option><option value="arrows">🏹 Стріли</option><option value="stones">❤️ Камені</option><option value="spears">🗡️ Списи</option><option value="bombs">💣 Бомби</option>
+</select><button class="actbtn" id="giveBtn">Видати</button><br>
+<input id="setDamage" type="number" value="100" min="0" step="0.1" style="padding:10px;width:120px;border-radius:8px;border:0">
+<button class="actbtn" id="giveDamageBtn">Встановити Damage</button><br>
+<input id="setHunger" type="number" value="100" min="0" max="100" style="padding:10px;width:120px;border-radius:8px;border:0">
+<button class="actbtn" id="giveHungerBtn">Встановити Голод</button><br>
+<select id="spawnType" style="padding:10px;border-radius:8px">
+<option value="zombie">🧟 Зомбі</option><option value="skeleton">💀 Скелет</option><option value="slime">🟢 Слайм</option><option value="knight">🧟‍♂️ Зомбі-лицар</option><option value="wither">⚫ Візер-скелет</option><option value="blaze">🔥 Блейз</option><option value="eblaze">⚡ Ел. блейз</option><option value="giant">🧟 Зомбі-великан</option><option value="dragon">🐉 Дракон</option><option value="ftitan">🔥 Вогняний Титан</option>
+</select><button class="actbtn" id="spawnAdmin">Заспавнити</button>
+<div id="adminMsg" style="color:#8f8;margin-top:8px"></div>
+<hr><b id="langLabel">🌍 Мова</b><br>
+<button class="actbtn" onclick="setLang('uk');applyLang()">🇺🇦</button>
+<button class="actbtn" onclick="setLang('en');applyLang()">🇬🇧</button>
+<button class="actbtn" onclick="setLang('ru');applyLang()">🇷🇺</button>
+</div></div>
+<div id="info">Клікай по монстру щоб атакувати! Затримай 1.2с для удару списом 🗡️</div>
+</div>
+
+<script>
+const T={
+  uk:{title:"👹 Monster Clicker",clickInfo:"Клікай по монстру щоб атакувати! Затримай 1.2с для удару списом 🗡️",shop:"🛒 Магазин",items:"🎒 Предмети",upgrades:"⬆️ Покращення",elements:"🔮 Стихії",arrows5:"🏹 Стріли (×5)",arrowsDesc:"Урон: damage × 4.2 | Перезарядка: 10с",spear5:"🗡️ Спис (×5)",spearDesc:"Урон: damage × 1.4 | Затримай 1.2с для удару",bomb:"💣 Бомба",bombDesc:"Урон: damage × 1.7 | Миттєво",elemStone:"💎 Камінь стихії",elemStoneDesc:"Потрібен для Супер-бога",swordUpg:"⚔️ Покращення меча",swordDesc:"+damage | Ціна:",buy:"Купити",archer:"🏹 Лучник",archerDesc:"уд, 1.3 уд/сек | Ціна:",gun:"🔥 Вогнестрілька",gunDesc:"HP / 3.4с | Ціна:",miner:"⛏️ Шахтар",minerDesc:"❤️ / 15с | Ціна:",goldMiner:"💰 Золотий майнер",goldMinerDesc:"🪙 / сек | Ціна:",elOnlyOne:"Купуються раз і назавжди. Активна може бути лише одна.",activate:"Активувати",active:"✅ Активно",bought:"Куплено",nowActive:"Зараз активна",admin:"⚙️ Адмін",adminTitle:"🛠️ Адмін-панель",password:"Пароль",login:"Увійти",give:"Видати",setDmg:"Встановити Damage",spawn:"Заспавнити",shoot:"🏹 Стріляти",throwBomb:"💥 Кинути бомбу",reload:"⏳ Перезарядка:",spearReady:"🗡️ Готово до удару!",spearCD:"⏳ Спис:",lang:"🌍 Мова",
+    elFireDesc:"20% шанс при ударі: +damage×1.15",elIceDesc:"30% шанс: +монети і ×1.3 damage",elPoisonDesc:"60% шанс: +damage÷4 урону",elLightDesc:"7% шанс: +damage×1.5 монет",elDemonDesc:"5% шанс: тричі damage×3 з затримкою 0.24с",elUltraDesc:"15% отрута | 35% лід | 5% демон",elSuperGodDesc:"Всі стихії одночасно",archerFullDesc:"1.3 уд/сек | Ціна:",gunFullDesc:"HP / 3.4с | Ціна:",minerFullDesc:"❤️ / 15с | Ціна:",goldMinerFullDesc:"🪙 / сек | Ціна:",
+    elFireName:"🔥 Вогонь",elIceName:"🧊 Лід",elPoisonName:"☠️ Отрута",elLightName:"✨ Світло",elDemonName:"😈 Демон",elUltraName:"👑 Ультра Володар",elSuperGodName:"🌟 Супер-бог",
+    victoryName:"🏆 Перемога",victoryDesc:"Фінальна ціль",
+    spellPanel:"🔮 Заклинання",cast:"Кастувати",spellActive:"⚡ Активно",spellLocked:"Доступно з рівня 2",
+    spellLightningName:"⚡ Блискавка бога",spellLightningDesc:"damage×20 урона | 3 спалахи",
+    spellFlasherName:"✨ Флешер",spellFlasherDesc:"Після удару +damage×1.3 через 0.5с (10с)",
+    spellLuckyJackName:"🍀 Щасливий Джек",spellLuckyJackDesc:"×3 XP на 15 секунд",
+    armyPanel:"🛡️ Армія",armyBuy:"Купити",armyPrice:"Ціна:",
+    knightName:"⚔️ Лицар",generalName:"🎖️ Генерал",xpSellerName:"🌟 Продавець досвіду",
+    hunger:"🍖 Голод",food:"🍖 Їжа",foodNote:"Купуй їжу щоб відновити голод",
+    apple:"🍎 Яблуко",appleDesc:"+5% голоду",
+    meat:"🥩 М'ясо",meatDesc:"+15% голоду | ⚠️ damage÷1.25 на 5с",
+    eat:"Їсти",noFood:"Їжа відсутня. Купи у магазині!",
+    setHunger:"Встановити Голод",
+    pizza:"🍕 Піца",pizzaDesc:"+20% голоду | 💰 +10% доходу на 30с",
+    banana:"🍌 Банан",bananaDesc:"+9% голоду | ⚔️ +15% damage на 10с | ⚠️ -2% доходу на 10с",
+    weirdFruit:"🍈 Дивний фрукт",weirdFruitDesc:"+30% голоду | ❄️ голод не зменшується 20с",
+    watermelon:"🍉 Кавун",watermelonDesc:"+50% голоду | 🛒 -20% ціни на 40с",
+    toxicStrawberry:"🍓 Токсична полуниця",toxicDesc:"+5% голоду | ⚠️ швидкість голоду +15% на 10с",
+    pineapple:"🍍 Ананас",pineappleDesc:"+70% голоду | 🔥 стихія вогню на 15с",
+    cannon:"💣 Гармата",cannonDesc:"урона / с | Ціна:",
+    winTitle:"Ти переміг!",winMsg:"Чесна перемога! Молодець!",
+    loseTitle:"Ти програв.",loseMsg:"Грай чесно.",
+    starveTitle:"Ви вмерли з голоду.",starveMsg:"Ви програли.",
+    keepPlaying:"Грати далі",restart:"Все заново"},
+  en:{title:"👹 Monster Clicker",clickInfo:"Click the monster to attack! Hold 1.2s for spear strike 🗡️",shop:"🛒 Shop",items:"🎒 Items",upgrades:"⬆️ Upgrades",elements:"🔮 Elements",arrows5:"🏹 Arrows (×5)",arrowsDesc:"Damage: damage × 4.2 | Reload: 10s",spear5:"🗡️ Spear (×5)",spearDesc:"Damage: damage × 1.4 | Hold 1.2s to strike",bomb:"💣 Bomb",bombDesc:"Damage: damage × 1.7 | Instant",elemStone:"💎 Element Stone",elemStoneDesc:"Required for Super-God",swordUpg:"⚔️ Sword Upgrade",swordDesc:"+damage | Price:",buy:"Buy",archer:"🏹 Archer",archerDesc:"dmg, 1.3 hits/s | Price:",gun:"🔥 Flamethrower",gunDesc:"HP / 3.4s | Price:",miner:"⛏️ Miner",minerDesc:"❤️ / 15s | Price:",goldMiner:"💰 Gold Miner",goldMinerDesc:"🪙 / sec | Price:",elOnlyOne:"Bought once, kept forever. Only one can be active.",activate:"Activate",active:"✅ Active",bought:"Bought",nowActive:"Currently active",admin:"⚙️ Admin",adminTitle:"🛠️ Admin Panel",password:"Password",login:"Login",give:"Give",setDmg:"Set Damage",spawn:"Spawn",shoot:"🏹 Shoot",throwBomb:"💥 Throw Bomb",reload:"⏳ Reload:",spearReady:"🗡️ Ready to strike!",spearCD:"⏳ Spear:",lang:"🌍 Language",
+    elFireDesc:"20% chance on hit: +damage×1.15",elIceDesc:"30% chance: +coins and ×1.3 damage",elPoisonDesc:"60% chance: +damage÷4 bonus",elLightDesc:"7% chance: +damage×1.5 coins",elDemonDesc:"5% chance: damage×3 three times, 0.24s delay",elUltraDesc:"15% poison | 35% ice | 5% demon",elSuperGodDesc:"All elements at once",
+    elFireName:"🔥 Fire",elIceName:"🧊 Ice",elPoisonName:"☠️ Poison",elLightName:"✨ Light",elDemonName:"😈 Demon",elUltraName:"👑 Ultra Lord",elSuperGodName:"🌟 Super-God",
+    victoryName:"🏆 Victory",victoryDesc:"The final goal",
+    spellPanel:"🔮 Spells",cast:"Cast",spellActive:"⚡ Active",spellLocked:"Available from level 2",
+    spellLightningName:"⚡ God's Lightning",spellLightningDesc:"damage×20 | 3 flashes",
+    spellFlasherName:"✨ Flasher",spellFlasherDesc:"+damage×1.3 after 0.5s delay (10s)",
+    spellLuckyJackName:"🍀 Lucky Jack",spellLuckyJackDesc:"×3 XP for 15 seconds",
+    armyPanel:"🛡️ Army",armyBuy:"Buy",armyPrice:"Price:",
+    knightName:"⚔️ Knight",generalName:"🎖️ General",xpSellerName:"🌟 XP Seller",
+    hunger:"🍖 Hunger",food:"🍖 Food",foodNote:"Buy food to restore hunger",
+    apple:"🍎 Apple",appleDesc:"+5% hunger",
+    meat:"🥩 Meat",meatDesc:"+15% hunger | ⚠️ damage÷1.25 for 5s",
+    eat:"Eat",noFood:"No food. Buy some in the shop!",
+    setHunger:"Set Hunger",
+    pizza:"🍕 Pizza",pizzaDesc:"+20% hunger | 💰 +10% income for 30s",
+    banana:"🍌 Banana",bananaDesc:"+9% hunger | ⚔️ +15% damage for 10s | ⚠️ -2% income for 10s",
+    weirdFruit:"🍈 Weird Fruit",weirdFruitDesc:"+30% hunger | ❄️ hunger paused for 20s",
+    watermelon:"🍉 Watermelon",watermelonDesc:"+50% hunger | 🛒 -20% prices for 40s",
+    toxicStrawberry:"🍓 Toxic Strawberry",toxicDesc:"+5% hunger | ⚠️ hunger speed +15% for 10s",
+    pineapple:"🍍 Pineapple",pineappleDesc:"+70% hunger | 🔥 fire element for 15s",
+    cannon:"💣 Cannon",cannonDesc:"dmg / s | Price:",
+    winTitle:"You won!",winMsg:"Fair victory! Well done!",
+    loseTitle:"You lost.",loseMsg:"Play fair.",
+    starveTitle:"You starved to death.",starveMsg:"You lost.",
+    keepPlaying:"Keep playing",restart:"Restart"},
+  ru:{title:"👹 Monster Clicker",clickInfo:"Кликай по монстру чтобы атаковать! Удержи 1.2с для удара копьём 🗡️",shop:"🛒 Магазин",items:"🎒 Предметы",upgrades:"⬆️ Улучшения",elements:"🔮 Стихии",arrows5:"🏹 Стрелы (×5)",arrowsDesc:"Урон: damage × 4.2 | Перезарядка: 10с",spear5:"🗡️ Копьё (×5)",spearDesc:"Урон: damage × 1.4 | Удержи 1.2с для удара",bomb:"💣 Бомба",bombDesc:"Урон: damage × 1.7 | Мгновенно",elemStone:"💎 Камень стихии",elemStoneDesc:"Нужен для Супер-бога",swordUpg:"⚔️ Улучшение меча",swordDesc:"+damage | Цена:",buy:"Купить",archer:"🏹 Лучник",archerDesc:"уд, 1.3 уд/сек | Цена:",gun:"🔥 Огнестрелка",gunDesc:"HP / 3.4с | Цена:",miner:"⛏️ Шахтёр",minerDesc:"❤️ / 15с | Цена:",goldMiner:"💰 Золотой шахтёр",goldMinerDesc:"🪙 / сек | Цена:",elOnlyOne:"Покупаются раз и навсегда. Активна может быть только одна.",activate:"Активировать",active:"✅ Активно",bought:"Куплено",nowActive:"Сейчас активна",admin:"⚙️ Админ",adminTitle:"🛠️ Админ-панель",password:"Пароль",login:"Войти",give:"Выдать",setDmg:"Установить Damage",spawn:"Заспавнить",shoot:"🏹 Стрелять",throwBomb:"💥 Бросить бомбу",reload:"⏳ Перезарядка:",spearReady:"🗡️ Готово к удару!",spearCD:"⏳ Копьё:",lang:"🌍 Язык",
+    elFireDesc:"20% шанс при ударе: +damage×1.15",elIceDesc:"30% шанс: +монеты и ×1.3 урона",elPoisonDesc:"60% шанс: +damage÷4 урона",elLightDesc:"7% шанс: +damage×1.5 монет",elDemonDesc:"5% шанс: трижды damage×3, задержка 0.24с",elUltraDesc:"15% яд | 35% лёд | 5% демон",elSuperGodDesc:"Все стихии одновременно",
+    elFireName:"🔥 Огонь",elIceName:"🧊 Лёд",elPoisonName:"☠️ Яд",elLightName:"✨ Свет",elDemonName:"😈 Демон",elUltraName:"👑 Ультра Владыка",elSuperGodName:"🌟 Супер-бог",
+    victoryName:"🏆 Победа",victoryDesc:"Финальная цель",
+    spellPanel:"🔮 Заклинания",cast:"Применить",spellActive:"⚡ Активно",spellLocked:"Доступно с уровня 2",
+    spellLightningName:"⚡ Молния бога",spellLightningDesc:"damage×20 | 3 вспышки",
+    spellFlasherName:"✨ Флешер",spellFlasherDesc:"+damage×1.3 через 0.5с (10с)",
+    spellLuckyJackName:"🍀 Счастливый Джек",spellLuckyJackDesc:"×3 XP на 15 секунд",
+    armyPanel:"🛡️ Армия",armyBuy:"Купить",armyPrice:"Цена:",
+    knightName:"⚔️ Рыцарь",generalName:"🎖️ Генерал",xpSellerName:"🌟 Продавец опыта",
+    hunger:"🍖 Голод",food:"🍖 Еда",foodNote:"Покупай еду чтобы восстановить голод",
+    apple:"🍎 Яблоко",appleDesc:"+5% голода",
+    meat:"🥩 Мясо",meatDesc:"+15% голода | ⚠️ damage÷1.25 на 5с",
+    eat:"Съесть",noFood:"Еда отсутствует. Купи в магазине!",
+    setHunger:"Установить Голод",
+    pizza:"🍕 Пицца",pizzaDesc:"+20% голода | 💰 +10% дохода на 30с",
+    banana:"🍌 Банан",bananaDesc:"+9% голода | ⚔️ +15% damage на 10с | ⚠️ -2% дохода на 10с",
+    weirdFruit:"🍈 Странный фрукт",weirdFruitDesc:"+30% голода | ❄️ голод не убывает 20с",
+    watermelon:"🍉 Арбуз",watermelonDesc:"+50% голода | 🛒 -20% цены на 40с",
+    toxicStrawberry:"🍓 Токсичная клубника",toxicDesc:"+5% голода | ⚠️ скорость голода +15% на 10с",
+    pineapple:"🍍 Ананас",pineappleDesc:"+70% голода | 🔥 стихия огня на 15с",
+    cannon:"💣 Пушка",cannonDesc:"урона / с | Цена:",
+    winTitle:"Ты победил!",winMsg:"Честная победа! Молодец!",
+    loseTitle:"Ты проиграл.",loseMsg:"Играй честно.",
+    starveTitle:"Вы умерли от голода.",starveMsg:"Вы проиграли.",
+    keepPlaying:"Играть дальше",restart:"Заново"}
+};
+let lang="uk";
+function setLang(l){
+  lang=l;
+  const ls=document.getElementById("langScreen");
+  if(ls&&ls.style.display!=="none"){ls.style.display="none";document.getElementById("game").style.display="block";applyLang();spawn();update();startHunger();}
+  else{applyLang();update();}
+}
+function t(k){return T[lang][k]||T.uk[k]||k;}
+function applyLang(){
+  document.querySelector("h1").textContent=t("title");
+  document.getElementById("info").textContent=t("clickInfo");
+  document.getElementById("shopBtn").childNodes[0].textContent=t("shop").replace("🛒 ","🛒 ");
+  $("shopBtn").firstChild.textContent=t("shop");
+  $("tabItems").textContent=t("items");
+  $("tabUpgrades").textContent=t("upgrades");
+  $("tabElements").textContent=t("elements");
+  $("shoot").textContent=t("shoot");
+  $("useBomb").textContent=t("throwBomb");
+  $("adminOpen").textContent=t("admin");
+  $("adminPass").placeholder=t("password");
+  $("adminLoginBtn").textContent=t("login");
+  $("giveBtn").textContent=t("give");
+  $("giveDamageBtn").textContent=t("setDmg");
+  $("spawnAdmin").textContent=t("spawn");
+  // Магазин — предмети
+  document.querySelector("#secItems .shopItem:nth-child(1) b").textContent=t("arrows5");
+  document.querySelector("#secItems .shopItem:nth-child(1) small").textContent=t("arrowsDesc");
+  document.querySelector("#secItems .shopItem:nth-child(2) b").textContent=t("spear5");
+  document.querySelector("#secItems .shopItem:nth-child(2) small").textContent=t("spearDesc");
+  document.querySelector("#secItems .shopItem:nth-child(3) b").textContent=t("bomb");
+  document.querySelector("#secItems .shopItem:nth-child(3) small").textContent=t("bombDesc");
+  document.querySelector("#secItems .shopItem:nth-child(4) b").textContent=t("elemStone");
+  document.querySelector("#secItems .shopItem:nth-child(4) small").textContent=t("elemStoneDesc");
+  // Магазин — покращення
+  document.querySelector("#secUpgrades .shopItem:nth-child(1) b").textContent=t("swordUpg");
+  document.querySelector("#secUpgrades .shopItem:nth-child(2) b").textContent=t("archer");
+  document.querySelector("#secUpgrades .shopItem:nth-child(3) b").textContent=t("gun");
+  document.querySelector("#secUpgrades .shopItem:nth-child(4) b").textContent=t("miner");
+  document.querySelector("#secUpgrades .shopItem:nth-child(5) b").textContent=t("goldMiner");
+  // Стихії — описи і назви
+  document.querySelector("#secElements>div:first-child").textContent=t("elOnlyOne");
+  const elNameKeys=["elFireName","elIceName","elPoisonName","elLightName","elDemonName","elUltraName","elSuperGodName"];
+  const elKeys=["elFireDesc","elIceDesc","elPoisonDesc","elLightDesc","elDemonDesc","elUltraDesc","elSuperGodDesc"];
+  document.querySelectorAll("#secElements .elItem").forEach((item,i)=>{
+    const b=item.querySelector("b");const s=item.querySelector("small");
+    if(b&&elNameKeys[i])b.textContent=t(elNameKeys[i]);
+    if(s&&elKeys[i])s.textContent=t(elKeys[i]);
+  });
+  // Перемога
+  const vn=$("victoryItemName"),vd=$("victoryItemDesc");
+  if(vn)vn.textContent=t("victoryName");
+  if(vd)vd.textContent=t("victoryDesc")+" | 100,000,000 🪙";
+  // Голод і їжа
+  $("hungerLabel").textContent=t("hunger");
+  $("tabFood").textContent=t("food");
+  $("foodShopNote").textContent=t("foodNote");
+  $("appleShopName").textContent=t("apple");
+  $("appleShopDesc").textContent=t("appleDesc");
+  $("meatShopName").textContent=t("meat");
+  $("meatShopDesc").textContent=t("meatDesc");
+  $("pizzaShopName").textContent=t("pizza");$("pizzaShopDesc").textContent=t("pizzaDesc");
+  $("bananaShopName").textContent=t("banana");$("bananaShopDesc").textContent=t("bananaDesc");
+  $("weirdFruitShopName").textContent=t("weirdFruit");$("weirdFruitShopDesc").textContent=t("weirdFruitDesc");
+  $("watermelonShopName").textContent=t("watermelon");$("watermelonShopDesc").textContent=t("watermelonDesc");
+  $("toxicShopName").textContent=t("toxicStrawberry");$("toxicShopDesc").textContent=t("toxicDesc");
+  $("pineappleShopName").textContent=t("pineapple");$("pineappleShopDesc").textContent=t("pineappleDesc");
+  $("cannonShopName").textContent=t("cannon");
+  $("foodPanelTitle").textContent=t("food");
+  $("giveHungerBtn").textContent=t("setHunger");
+  // Кнопки купити
+  document.querySelectorAll(".shopItem button:not([id])").forEach(b=>b.textContent=t("buy"));
+  // Адмін заголовок
+  document.querySelector("#admin h2").textContent=t("adminTitle");
+}
+
+let coins=0,arrows=0,stones=0,spears=0,bombs=0,elemStones=0,damage=1,hp=10,maxHp=10,price=15,purchase=0,monsterType="zombie",shootReady=true,cooldown=0;
+let superPowerActive=false,superPowerTimer=null;
+let hunger=100,hungerHitCount=0,hungerTimerStarted=false;
+let foodInv={apple:0,meat:0,pizza:0,banana:0,weirdFruit:0,watermelon:0,toxicStrawberry:0,pineapple:0};
+let meatDebuffTimer=null,meatDebuffActive=false;
+let coinMult=1,coinMultTimer=null;
+let xp=0,xpLevel=1,xpMax=1000;
+let streakType="",streakCount=0;
+let spellCDs={lightning:0,flasher:0,luckyJack:0};
+let flasherActive=false,flasherTimer=null,flasherInterval=null;
+let xpMult=1,luckyJackTimer=null;
+let knightCount=0,knightPrice=5000,knightDmg=11,knightInterval=5.7,knightTimer=null;
+let generalCount=0,generalPrice=25000,generalInterval=30,generalTimer=null;
+let xpSellerCount=0,xpSellerPrice=2000,xpSellerRate=3,xpSellerTimer=null;
+let giftCDs={coins20:0,chest:0};
+let cannonCount=0,cannonPrice=5000,cannonDmg=30,cannonInterval=20,cannonTimer=null;
+let tempFireTimer=null;
+let hasArmor=false;
+let damageBuff=0,damageBuffTimer=null;
+let discountActive=false,discountTimer=null;
+let hungerFrozen=false,hungerFrozenTimer=null;
+let hungerSpeedMult=1,hungerSpeedTimer=null;
+let bananaCoinDebuff=false,bananaCoinTimer=null;
+let archerCount=0,archerPrice=100,archerDmg=1,archerTimer=null;
+let gunCount=0,gunPrice=300,gunDmg=2.7,gunTimer=null;
+let minerCount=0,minerPrice=1000,minerRate=1,minerTimer=null;
+let goldMinerCount=0,goldPrice=2500,goldRate=15,goldTimer=null;
+let spearReady=true,spearCooldownLeft=0,spearCooldownTimer=null;
+// Стихії: owned = куплено, active = яка зараз активна (null або 'fire')
+let elOwned={fire:false,ice:false,poison:false,light:false,demon:false,ultra:false,supergod:false},elActive=null;
+let holdStart=null,holdAnim=null,holding=false,adminUnlocked=false,adminUsed=false,bugTestMode=false;
+
+const $=id=>document.getElementById(id);
+const coinsEl=$("coins"),arrowsEl=$("arrows"),stonesEl=$("stones"),spearsEl=$("spears"),bombsEl=$("bombs"),elemStonesEl=$("elemStones"),dmgEl=$("dmg");
+const hpBar=$("hpbar"),hpText=$("hptext"),nameEl=$("name");
+const monster=$("monster"),shoot=$("shoot"),cooldownEl=$("cooldown"),spearcooldownEl=$("spearcooldown");
+const useBomb=$("useBomb");
+const buy=$("buyUpgrade"),buyArrows=$("buyArrows"),buySpear=$("buySpear"),buyBomb=$("buyBomb");
+const buyArcher=$("buyArcher"),buyGun=$("buyGun"),buyMiner=$("buyMiner"),buyGoldMiner=$("buyGoldMiner"),buyVictory=$("buyVictory");
+const shopBtn=$("shopBtn"),shopOverlay=$("shopOverlay"),shopClose=$("shopClose"),shopBadge=$("shopBadge");
+const tabItems=$("tabItems"),tabUpgrades=$("tabUpgrades"),tabElements=$("tabElements"),tabFood=$("tabFood");
+const secItems=$("secItems"),secUpgrades=$("secUpgrades"),secElements=$("secElements"),secFood=$("secFood");
+const foodBtn=$("foodBtn"),foodOverlay=$("foodOverlay"),foodClose=$("foodClose"),foodBadge=$("foodBadge"),foodList=$("foodList");
+const bossBtn=$("bossBtn"),bossOverlay=$("bossOverlay"),bossClose=$("bossClose"),bossList=$("bossList");
+const giftBtn=$("giftBtn"),giftOverlay=$("giftOverlay"),giftClose=$("giftClose"),giftList=$("giftList");
+const tradeBtn=$("tradeBtn"),tradeOverlay=$("tradeOverlay"),tradeClose=$("tradeClose"),tradeList=$("tradeList");
+const minigameBtn=$("minigameBtn"),mgOverlay=$("mgOverlay"),mgClose=$("mgClose");
+const mgCanvas=$("mgCanvas"),mgCtx=mgCanvas.getContext("2d");
+const mgStartBtn=$("mgStartBtn"),mgStatus=$("mgStatus"),mgRecordEl=$("mgRecord"),mgCoinsEl=$("mgCoins"),mgDmgLabel=$("mgDmgLabel");
+let mgRecord=0,mgCDLeft=0,mgCDTimer=null,mgRunning=false;
+let mgEnemies=[],mgBaseHp=10,mgKilled=0,mgFrame=null;
+const spellBtn=$("spellBtn"),spellOverlay=$("spellOverlay"),spellClose=$("spellClose"),spellList=$("spellList");
+const armyBtn=$("armyBtn"),armyOverlay=$("armyOverlay"),armyClose=$("armyClose"),armyList=$("armyList");
+const buyApple=$("buyApple"),buyMeat=$("buyMeat"),buyPizza=$("buyPizza"),buyBanana=$("buyBanana"),buyWeirdFruit=$("buyWeirdFruit"),buyWatermelon=$("buyWatermelon"),buyToxic=$("buyToxic"),buyPineapple=$("buyPineapple"),giveHungerBtn=$("giveHungerBtn");
+const buyCannon=$("buyCannon"),cannonItem=$("cannonItem");
+const elFireBtn=$("elFireBtn"),elFireItem=$("elFireItem"),elFireStatus=$("elFireStatus"),elActiveLabel=$("elActiveLabel");
+const elIceBtn=$("elIceBtn"),elIceItem=$("elIceItem"),elIceStatus=$("elIceStatus");
+const elPoisonBtn=$("elPoisonBtn"),elPoisonItem=$("elPoisonItem"),elPoisonStatus=$("elPoisonStatus");
+const elLightBtn=$("elLightBtn"),elLightItem=$("elLightItem"),elLightStatus=$("elLightStatus");
+const elDemonBtn=$("elDemonBtn"),elDemonItem=$("elDemonItem"),elDemonStatus=$("elDemonStatus");
+const elUltraBtn=$("elUltraBtn"),elUltraItem=$("elUltraItem"),elUltraStatus=$("elUltraStatus");
+const elSuperGodBtn=$("elSuperGodBtn"),elSuperGodItem=$("elSuperGodItem"),elSuperGodStatus=$("elSuperGodStatus");
+const buyElemStone=$("buyElemStone");
+const adminOpen=$("adminOpen"),admin=$("admin"),adminLogin=$("adminLoginBtn"),adminPass=$("adminPass"),adminControls=$("adminControls");
+const giveAmount=$("giveAmount"),giveType=$("giveType"),give=$("giveBtn"),setDamage=$("setDamage"),giveDamage=$("giveDamageBtn"),spawnType=$("spawnType"),spawnAdmin=$("spawnAdmin"),adminMsg=$("adminMsg");
+const spearChargeWrap=$("spearcharge"),spearChargeBar=$("spearchargebar"),superPowerEmoji=$("superPowerWrap"),superPowerBar=$("superPowerBar");
+const fire=document.createElement("span");fire.id="fire";fire.textContent="🔥";monster.appendChild(fire);
+
+// Магазин
+shopBtn.onclick=()=>shopOverlay.style.display="block";
+shopClose.onclick=()=>shopOverlay.style.display="none";
+shopOverlay.onclick=e=>{if(e.target===shopOverlay)shopOverlay.style.display="none"};
+function switchTab(active){
+  [tabItems,tabUpgrades,tabElements,tabFood].forEach(t=>t.classList.remove("active"));
+  [secItems,secUpgrades,secElements,secFood].forEach(s=>s.classList.remove("active"));
+  active.tab.classList.add("active");active.sec.classList.add("active");
+}
+tabItems.onclick=()=>switchTab({tab:tabItems,sec:secItems});
+tabUpgrades.onclick=()=>switchTab({tab:tabUpgrades,sec:secUpgrades});
+tabElements.onclick=()=>switchTab({tab:tabElements,sec:secElements});
+tabFood.onclick=()=>switchTab({tab:tabFood,sec:secFood});
+
+foodBtn.onclick=()=>{renderFoodPanel();foodOverlay.style.display="block";}
+foodClose.onclick=()=>foodOverlay.style.display="none";
+foodOverlay.onclick=e=>{if(e.target===foodOverlay)foodOverlay.style.display="none";};
+bossBtn.onclick=()=>{renderBossPanel();bossOverlay.style.display="block";}
+bossClose.onclick=()=>bossOverlay.style.display="none";
+bossOverlay.onclick=e=>{if(e.target===bossOverlay)bossOverlay.style.display="none";};
+spellBtn.onclick=()=>{if(xpLevel<2)return;renderSpellPanel();spellOverlay.style.display="block";}
+spellClose.onclick=()=>spellOverlay.style.display="none";
+spellOverlay.onclick=e=>{if(e.target===spellOverlay)spellOverlay.style.display="none";};
+armyBtn.onclick=()=>{renderArmyPanel();armyOverlay.style.display="block";}
+armyClose.onclick=()=>armyOverlay.style.display="none";
+armyOverlay.onclick=e=>{if(e.target===armyOverlay)armyOverlay.style.display="none";};
+giftBtn.onclick=()=>{if(xpLevel<3)return;renderGiftPanel();giftOverlay.style.display="block";}
+giftClose.onclick=()=>giftOverlay.style.display="none";
+giftOverlay.onclick=e=>{if(e.target===giftOverlay)giftOverlay.style.display="none";};
+tradeBtn.onclick=()=>{if(xpLevel<4)return;renderTradePanel();tradeOverlay.style.display="block";}
+tradeClose.onclick=()=>tradeOverlay.style.display="none";
+tradeOverlay.onclick=e=>{if(e.target===tradeOverlay)tradeOverlay.style.display="none";};
+minigameBtn.onclick=()=>{openMinigame();};
+mgClose.onclick=()=>closeMinigame();
+
+// Адмін
+adminOpen.onclick=()=>{admin.style.display=admin.style.display==="none"?"block":"none"};
+adminLogin.onclick=()=>{
+  const pw=adminPass.value;
+  if(pw==="25850"||pw==="25850bugtest"){
+    adminUnlocked=true;
+    if(pw==="25850bugtest")bugTestMode=true;
+    adminControls.style.display="block";
+    adminMsg.textContent="OK"+(bugTestMode?" [bugtest]":"");
+  } else adminMsg.textContent="Wrong password";
+};
+give.onclick=()=>{if(!adminUnlocked)return;adminUsed=true;let v=Math.max(0,Number(giveAmount.value)||0),t=giveType.value;if(t==="coins")coins+=v;else if(t==="arrows")arrows+=v;else if(t==="stones")stones+=v;else if(t==="spears")spears+=v;else if(t==="bombs")bombs+=v;update();adminMsg.textContent="Given: "+v};
+giveDamage.onclick=()=>{if(!adminUnlocked)return;damage=Math.max(0,Number(setDamage.value)||0);update();adminMsg.textContent="Damage: "+fmt(damage)};
+spawnAdmin.onclick=()=>{if(!adminUnlocked)return;let t=spawnType.value;
+if(t==="zombie"){monsterType="zombie";maxHp=10;hp=10;nameEl.textContent="Зомбі";setColor("#39d353","#39d353")}
+else if(t==="skeleton"){monsterType="skeleton";maxHp=20;hp=20;nameEl.textContent="Скелет";setColor("#aaa","#aaa")}
+else if(t==="slime"){monsterType="slime";maxHp=50;hp=50;nameEl.textContent="Слайм";setColor("#7cff6b","#7cff6b")}
+else if(t==="knight"){monsterType="knight";maxHp=120;hp=120;nameEl.textContent="Зомбі-лицар";setColor("linear-gradient(90deg,#39d353 0 50%,#aaa 50% 100%)","#6f8")}
+else if(t==="wither"){monsterType="wither";maxHp=250;hp=250;nameEl.textContent="Візер-скелет";setColor("#444","#222")}
+else if(t==="blaze"){monsterType="blaze";maxHp=500;hp=500;nameEl.textContent="Блейз";setColor("#ffb000","#ff7a00")}
+else if(t==="eblaze"){monsterType="eblaze";maxHp=1500;hp=1500;nameEl.textContent="Електричний блейз";setColor("#0a1a6e","#1a3fff")}
+else if(t==="giant"){monsterType="giant";maxHp=5000;hp=5000;nameEl.textContent="Зомбі-великан";setColor("linear-gradient(135deg,#1a5c1a 0 50%,#b0b8b0 50% 100%)","#2d8c2d")}
+else if(t==="dragon"){monsterType="dragon";maxHp=20000;hp=20000;nameEl.textContent="Дракон";setColor("#5c0000","#8b0000")}
+else if(t==="ftitan"){monsterType="ftitan";maxHp=50000;hp=50000;nameEl.textContent="Вогняний Титан";setColor("linear-gradient(135deg,#8b1a00,#ff4400)","#ff4400")}
+update();adminMsg.textContent="Spawned: "+nameEl.textContent};
+
+function fmt(n){return Number(n.toFixed(2)).toString()}
+function applyArmorStyle(){
+  // Поверх поточного кольору монстра додаємо білий градієнтовий круг посередині
+  const cur=monster.style.background||"#39d353";
+  monster.style.background=cur+", radial-gradient(circle at 50% 50%, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.3) 30%, transparent 55%)";
+}
+function setColor(bg,shadow){
+  monster.style.background=bg;
+  monster.style.boxShadow="0 0 30px "+shadow;
+  hpBar.style.background=bg;
+  if(hasArmor)applyArmorStyle();
+}
+function restoreColor(){
+  if(monsterType==="stoneTitan")setColor("linear-gradient(135deg,#3a3a3a,#e0e0e0)","#888");
+  else if(monsterType==="ftitan")setColor("linear-gradient(135deg,#8b1a00,#ff4400)","#ff4400");
+  else if(monsterType==="dragon")setColor("#5c0000","#8b0000");
+  else if(monsterType==="giant")setColor("linear-gradient(135deg,#1a5c1a 0 50%,#b0b8b0 50% 100%)","#2d8c2d");
+  else if(monsterType==="eblaze")setColor("#0a1a6e","#1a3fff");
+  else if(monsterType==="blaze")setColor("#ffb000","#ff7a00");
+  else if(monsterType==="wither")setColor("#444","#222");
+  else if(monsterType==="knight")setColor("linear-gradient(90deg,#39d353 0 50%,#aaa 50% 100%)","#6f8");
+  else if(monsterType==="slime")setColor("#7cff6b","#7cff6b");
+  else if(monsterType==="skeleton")setColor("#aaa","#aaa");
+  else setColor("#39d353","#39d353");
+}
+function addCoins(n){coins+=Math.floor(n*coinMult*(bananaCoinDebuff?0.98:1));}
+function discPrice(p){return discountActive?Math.ceil(p*0.8):p;}
+
+function updateXP(){
+  const bar=$("xpBar"),pct=$("xpPct"),lvl=$("xpLevel");
+  if(!bar)return;
+  bar.style.width=Math.min(100,xp/xpMax*100)+"%";
+  pct.textContent=Math.floor(xp)+" / "+xpMax+" XP";
+  lvl.textContent=xpLevel;
+}
+function gainXP(amount){
+  if(!amount)return;
+  xp+=amount*xpMult;
+  while(xp>=xpMax){xp-=xpMax;xpLevel++;xpMax=Math.ceil(xpMax*2.5);}
+  updateXP();updateSpellBtn();updateGiftBtn();updateTradeBtn();
+}
+
+function spawnBoss(type){
+  bossOverlay.style.display="none";
+  if(type==="ftitan"){monsterType="ftitan";maxHp=50000;hp=50000;nameEl.textContent="Вогняний Титан";setColor("linear-gradient(135deg,#8b1a00,#ff4400)","#ff4400");}
+  else if(type==="stoneTitan"){monsterType="stoneTitan";maxHp=150000;hp=150000;nameEl.textContent="Кам'яний Титан";setColor("linear-gradient(135deg,#3a3a3a,#e0e0e0)","#888");}
+  update();
+}
+function renderBossPanel(){
+  const bosses=[
+    {key:"ftitan",  emoji:"🔥",name:"Вогняний Титан",  hp:"50,000",  drop:"17,000 🪙 + 50 ❤️ + 3 🔥"},
+    {key:"stoneTitan",emoji:"🪨",name:"Кам'яний Титан",hp:"150,000", drop:"25,000 🪙 + 5 💎"}
+  ];
+  bossList.innerHTML="";
+  bosses.forEach(b=>{
+    const row=document.createElement("div");
+    row.style.cssText="background:#242424;border:2px solid #555;border-radius:12px;padding:12px 14px;margin:8px 0;cursor:pointer;transition:.15s";
+    row.onmouseenter=()=>row.style.borderColor="#cc0000";
+    row.onmouseleave=()=>row.style.borderColor="#555";
+    row.innerHTML=`<b style="font-size:17px">${b.emoji} ${b.name}</b><br><span style="color:#aaa;font-size:13px">❤️ ${b.hp} HP | 🎁 ${b.drop}</span>`;
+    row.onclick=()=>spawnBoss(b.key);
+    bossList.appendChild(row);
+  });
+}
+
+function updateSpellBtn(){
+  spellBtn.style.opacity=xpLevel>=2?"1":"0.4";
+  spellBtn.style.borderColor=xpLevel>=2?"#9b59b6":"#444";
+  spellBtn.title=xpLevel>=2?t("spellPanel"):t("spellLocked");
+  armyBtn.title=t("armyPanel");
+}
+
+function castLightning(){
+  if(spellCDs.lightning>0||hp<=0)return;
+  flashMonster("#aaddff");
+  setTimeout(()=>{flashMonster("#aaddff");
+  setTimeout(()=>{flashMonster("#aaddff");},200);},200);
+  hp-=damage*20;if(hp<=0)kill();update();
+  spellCDs.lightning=20;
+  const t=setInterval(()=>{spellCDs.lightning--;if(spellCDs.lightning<=0)clearInterval(t);renderSpellPanel();},1000);
+}
+
+function castFlasher(){
+  if(spellCDs.flasher>0||hp<=0)return;
+  flasherActive=true;
+  if(flasherTimer)clearTimeout(flasherTimer);
+  flasherTimer=setTimeout(()=>{flasherActive=false;renderSpellPanel();},10000);
+  spellCDs.flasher=60;
+  const t=setInterval(()=>{spellCDs.flasher--;if(spellCDs.flasher<=0)clearInterval(t);renderSpellPanel();},1000);
+  renderSpellPanel();
+}
+
+function castLuckyJack(){
+  if(spellCDs.luckyJack>0)return;
+  xpMult=3;
+  if(luckyJackTimer)clearTimeout(luckyJackTimer);
+  luckyJackTimer=setTimeout(()=>{xpMult=1;renderSpellPanel();},15000);
+  spellCDs.luckyJack=180;
+  const t=setInterval(()=>{spellCDs.luckyJack--;if(spellCDs.luckyJack<=0)clearInterval(t);renderSpellPanel();},1000);
+  renderSpellPanel();
+}
+
+function renderSpellPanel(){
+  spellList.innerHTML="";
+  const spells=[
+    {key:"lightning",name:t("spellLightningName"),desc:t("spellLightningDesc"),cd:20,cast:castLightning},
+    {key:"flasher",  name:t("spellFlasherName"),  desc:t("spellFlasherDesc"),  cd:60,cast:castFlasher},
+    {key:"luckyJack",name:t("spellLuckyJackName"),desc:t("spellLuckyJackDesc"),cd:180,cast:castLuckyJack}
+  ];
+  spells.forEach(s=>{
+    const row=document.createElement("div");
+    const cdLeft=spellCDs[s.key];
+    const isActive=(s.key==="flasher"&&flasherActive)||(s.key==="luckyJack"&&xpMult>1);
+    row.style.cssText="background:#242424;border:2px solid "+(isActive?"#f0e060":cdLeft>0?"#555":"#6a0dad")+";border-radius:12px;padding:12px 14px;margin:8px 0;display:flex;align-items:center;justify-content:space-between;gap:10px";
+    const info=document.createElement("div");
+    info.innerHTML=`<b style="font-size:15px">${s.name}</b><br><small style="color:#aaa">${s.desc}</small>${isActive?`<br><small style="color:#f0e060">${t("spellActive")}</small>`:""}`;
+    const btn=document.createElement("button");
+    btn.style.cssText="border:0;border-radius:9px;padding:8px 14px;font-size:14px;font-weight:bold;cursor:pointer;white-space:nowrap;min-width:70px;background:"+(cdLeft>0?"#444":isActive?"#a09020":"#6a0dad")+";color:#fff";
+    btn.textContent=cdLeft>0?"⏳ "+cdLeft+"с":isActive?t("spellActive"):t("cast");
+    btn.disabled=cdLeft>0||isActive;
+    btn.onclick=s.cast;
+    row.appendChild(info);row.appendChild(btn);
+    spellList.appendChild(row);
+  });
+}
+
+function renderArmyPanel(){
+  armyList.innerHTML="";
+  const units=[
+    {name:t("knightName"),desc:`${fmt(knightDmg)} ${t("damage")||"урона"} / ${knightInterval.toFixed(1)}с`,price:knightPrice,count:knightCount,buy:buyKnight},
+    {name:t("generalName"),desc:`1 🏹 + 200 🪙 / ${generalInterval.toFixed(1)}с`,price:generalPrice,count:generalCount,buy:buyGeneral},
+    {name:t("xpSellerName"),desc:`${fmt(xpSellerRate)} XP/с`,price:xpSellerPrice,count:xpSellerCount,buy:buyXpSeller}
+  ];
+  units.forEach(u=>{
+    const row=document.createElement("div");
+    row.style.cssText="background:#242424;border:2px solid #5a3e00;border-radius:12px;padding:12px 14px;margin:8px 0;display:flex;align-items:center;justify-content:space-between;gap:10px";
+    const info=document.createElement("div");
+    info.style.flex="1";
+    info.innerHTML=`<b style="font-size:15px">${u.name}</b> <span style="color:#aaa;font-size:13px">(x${u.count})</span><br><small style="color:#aaa">${u.desc}</small><br><small style="color:#e8c060">${t("armyPrice")} ${u.price} 🪙</small>`;
+    const btn=document.createElement("button");
+    btn.textContent=t("armyBuy");
+    btn.disabled=coins<u.price;
+    btn.style.cssText="border:0;border-radius:9px;padding:8px 14px;background:#c07800;color:#fff;font-size:14px;font-weight:bold;cursor:pointer";
+    btn.onclick=u.buy;
+    row.appendChild(info);row.appendChild(btn);
+    armyList.appendChild(row);
+  });
+}
+
+function buyKnight(){
+  if(coins<knightPrice)return;
+  coins-=knightPrice;knightCount++;knightPrice=Math.ceil(knightPrice*2.2);knightDmg*=3.4;
+  if(!knightTimer)knightTimer=setInterval(()=>{if(hp>0&&knightCount)hit(knightDmg*knightCount);},knightInterval*1000);
+  update();renderArmyPanel();
+}
+function buyGeneral(){
+  if(coins<generalPrice)return;
+  coins-=generalPrice;generalCount++;generalPrice=Math.ceil(generalPrice*3);generalInterval/=1.2;
+  if(generalTimer)clearInterval(generalTimer);
+  generalTimer=setInterval(()=>{
+    if(generalCount>0){
+      archerCount+=generalCount;addCoins(200*generalCount);
+      if(!archerTimer)archerTimer=setInterval(()=>{if(hp>0&&archerCount)hit(archerDmg*archerCount)},1000/1.3);
+      update();
+    }
+  },generalInterval*1000);
+  update();renderArmyPanel();
+}
+
+function buyXpSeller(){
+  if(coins<xpSellerPrice)return;
+  coins-=xpSellerPrice;xpSellerCount++;xpSellerPrice=Math.ceil(xpSellerPrice*2.5);xpSellerRate*=3;
+  if(!xpSellerTimer)xpSellerTimer=setInterval(()=>{gainXP(xpSellerRate*xpSellerCount);},1000);
+  update();renderArmyPanel();
+}
+
+// ===== МІНІ-ГРА =====
+const MG_W=368,MG_H=320,MG_SPEED=MG_H/15; // px/sec — 15с до низу
+const MG_COLORS=["#e05555","#e08820","#55aa55","#5588dd","#aa55dd","#dd5599"];
+
+function mgEnemyHp(){return Math.round(mgBaseHp*Math.pow(1.1,mgKilled));}
+
+function mgSpawnWave(){
+  const multi=Math.random()<0.5?1:Math.floor(Math.random()*3)+2;
+  const cols=MG_W/60;
+  const used=[];
+  for(let i=0;i<multi;i++){
+    let col;do{col=Math.floor(Math.random()*cols);}while(used.includes(col)&&used.length<cols);
+    used.push(col);
+    const hp=mgEnemyHp();
+    mgEnemies.push({x:col*60+30,y:-30,hp,maxHp:hp,color:MG_COLORS[Math.floor(Math.random()*MG_COLORS.length)],r:24});
+  }
+}
+
+function mgDraw(dt){
+  mgCtx.clearRect(0,0,MG_W,MG_H);
+  // Лінія програшу
+  mgCtx.strokeStyle="#e05555";mgCtx.lineWidth=2;mgCtx.setLineDash([6,4]);
+  mgCtx.beginPath();mgCtx.moveTo(0,MG_H-10);mgCtx.lineTo(MG_W,MG_H-10);mgCtx.stroke();
+  mgCtx.setLineDash([]);
+  let lost=false;
+  mgEnemies.forEach(e=>{
+    e.y+=MG_SPEED*dt;
+    // Малюємо ворога
+    mgCtx.beginPath();mgCtx.arc(e.x,e.y,e.r,0,Math.PI*2);mgCtx.fillStyle=e.color;mgCtx.fill();
+    mgCtx.strokeStyle="#fff3";mgCtx.lineWidth=1;mgCtx.stroke();
+    // HP бар
+    const bw=e.r*2,bh=5,bx=e.x-e.r,by=e.y+e.r+4;
+    mgCtx.fillStyle="#333";mgCtx.fillRect(bx,by,bw,bh);
+    mgCtx.fillStyle="#4f4";mgCtx.fillRect(bx,by,bw*(e.hp/e.maxHp),bh);
+    if(e.y-e.r>MG_H-10)lost=true;
+  });
+  if(lost){mgEndGame();return;}
+  // Час від попереднього спавну
+  mgCtx.fillStyle="#444";mgCtx.fillRect(0,0,MG_W,3);
+  mgCtx.fillStyle="#6af";mgCtx.fillRect(0,0,MG_W*(1-(mgSpawnTimer/mgSpawnInterval)),3);
+}
+
+let mgLast=0,mgSpawnTimer=0,mgSpawnInterval=3;
+function mgLoop(ts){
+  if(!mgRunning)return;
+  const dt=Math.min((ts-mgLast)/1000,0.1);mgLast=ts;
+  mgSpawnTimer+=dt;
+  if(mgSpawnTimer>=mgSpawnInterval||mgEnemies.length===0){mgSpawnTimer=0;mgSpawnWave();}
+  mgDraw(dt);
+  mgFrame=requestAnimationFrame(mgLoop);
+}
+
+function mgClickHit(cx,cy){
+  if(!mgRunning)return;
+  const dmg=damage;
+  for(let i=mgEnemies.length-1;i>=0;i--){
+    const e=mgEnemies[i];
+    if(Math.hypot(cx-e.x,cy-e.y)<=e.r){
+      e.hp-=dmg;
+      if(e.hp<=0){
+        mgRecord+=e.maxHp;mgKilled++;mgEnemies.splice(i,1);
+        mgRecordEl.textContent=mgRecord;mgCoinsEl.textContent=Math.floor(mgRecord/50)*100;
+      }
+      break;
+    }
+  }
+}
+
+function mgStartGame(){
+  if(mgCDLeft>0)return;
+  mgRunning=true;mgEnemies=[];mgRecord=0;mgKilled=0;mgSpawnTimer=0;mgSpawnInterval=3;
+  mgStatus.textContent="";mgStartBtn.style.display="none";
+  mgRecordEl.textContent=0;mgCoinsEl.textContent=0;mgDmgLabel.textContent=fmt(damage);
+  mgLast=performance.now();
+  mgFrame=requestAnimationFrame(mgLoop);
+}
+
+function mgEndGame(){
+  mgRunning=false;cancelAnimationFrame(mgFrame);
+  const earned=Math.floor(mgRecord/50)*100;
+  addCoins(earned);update();
+  mgCtx.fillStyle="#000a";mgCtx.fillRect(0,0,MG_W,MG_H);
+  mgCtx.fillStyle="#fff";mgCtx.font="bold 22px Arial";mgCtx.textAlign="center";
+  mgCtx.fillText("💀 Провал!",MG_W/2,MG_H/2-20);
+  mgCtx.font="16px Arial";mgCtx.fillStyle="#f0e060";
+  mgCtx.fillText("Рекорд: "+mgRecord+" | +"+earned+" 🪙",MG_W/2,MG_H/2+15);
+  mgCDLeft=120;mgStartBtn.style.display="inline-block";mgStartBtn.disabled=true;
+  mgStartBtn.textContent="⏳ "+mgCDLeft+"с";
+  mgStatus.textContent="";
+  if(mgCDTimer)clearInterval(mgCDTimer);
+  mgCDTimer=setInterval(()=>{mgCDLeft--;mgStartBtn.textContent=mgCDLeft>0?"⏳ "+mgCDLeft+"с":"▶ Старт";if(mgCDLeft<=0){mgStartBtn.disabled=false;clearInterval(mgCDTimer);}},1000);
+}
+
+function openMinigame(){mgOverlay.style.display="block";mgDmgLabel.textContent=fmt(damage);mgCtx.clearRect(0,0,MG_W,MG_H);}
+function closeMinigame(){if(mgRunning)mgEndGame();mgOverlay.style.display="none";}
+
+mgStartBtn.onclick=()=>{if(!mgStartBtn.disabled)mgStartGame();}
+mgCanvas.addEventListener("click",e=>{const r=mgCanvas.getBoundingClientRect();mgClickHit(e.clientX-r.left,e.clientY-r.top);});
+mgCanvas.addEventListener("touchstart",e=>{e.preventDefault();const r=mgCanvas.getBoundingClientRect();const t=e.touches[0];mgClickHit(t.clientX-r.left,t.clientY-r.top);},{passive:false});
+
+// ===== КІНЕЦЬ МІНІ-ГРИ =====
+
+function updateTradeBtn(){
+  tradeBtn.style.opacity=xpLevel>=4?"1":"0.4";
+  tradeBtn.style.borderColor=xpLevel>=4?"#00bcd4":"#444";
+  tradeBtn.title=xpLevel>=4?"Обмін":"Доступно з рівня 4";
+}
+
+function renderTradePanel(){
+  tradeList.innerHTML="";
+  const trades=[
+    {name:"🪙→❤️",desc:"200 монет → 1 камінь життя",  canDo:()=>coins>=200,  do:()=>{coins-=200;stones++;update();}},
+    {name:"❤️→🪙",desc:"1 камінь життя → 200 монет",  canDo:()=>stones>=1,   do:()=>{stones--;addCoins(200);update();}},
+    {name:"🪙→💎",desc:"3000 монет → 1 камінь стихії", canDo:()=>coins>=3000, do:()=>{coins-=3000;elemStones++;update();}},
+    {name:"💎→🪙",desc:"1 камінь стихії → 3000 монет", canDo:()=>elemStones>=1,do:()=>{elemStones--;addCoins(3000);update();}}
+  ];
+  trades.forEach(tr=>{
+    const row=document.createElement("div");
+    const ok=tr.canDo();
+    row.style.cssText=`background:#242424;border:2px solid ${ok?"#00bcd4":"#444"};border-radius:12px;padding:12px 14px;margin:8px 0;display:flex;align-items:center;justify-content:space-between;gap:10px`;
+    const info=document.createElement("div");
+    info.innerHTML=`<b style="font-size:16px">${tr.name}</b><br><small style="color:#aaa">${tr.desc}</small>`;
+    const btn=document.createElement("button");
+    btn.textContent="💱";
+    btn.disabled=!ok;
+    btn.style.cssText=`border:0;border-radius:9px;padding:8px 14px;background:${ok?"#007c8a":"#444"};color:#fff;font-size:20px;cursor:${ok?"pointer":"default"}`;
+    btn.onclick=()=>{tr.do();renderTradePanel();};
+    row.appendChild(info);row.appendChild(btn);
+    tradeList.appendChild(row);
+  });
+}
+
+function updateGiftBtn(){
+  giftBtn.style.opacity=xpLevel>=3?"1":"0.4";
+  giftBtn.style.borderColor=xpLevel>=3?"#e8c060":"#444";
+  giftBtn.title=xpLevel>=3?"Подарунки":"Доступно з рівня 3";
+}
+
+function claimCoins20(){
+  if(giftCDs.coins20>0||xpLevel<3)return;
+  addCoins(20);update();
+  giftCDs.coins20=5;
+  const t=setInterval(()=>{giftCDs.coins20--;if(giftCDs.coins20<=0)clearInterval(t);renderGiftPanel();},1000);
+  renderGiftPanel();
+}
+
+function claimChest(){
+  if(giftCDs.chest>0||xpLevel<3)return;
+  const drops=[];
+  // Предмет 1
+  const r1=Math.random();
+  if(r1<0.5){addCoins(50);drops.push("🪙 50 монет");}
+  else if(r1<0.75){arrows++;drops.push("🏹 1 стріла");}
+  else{bombs+=3;drops.push("💣 3 бомби");}
+  // Предмет 2
+  const r2=Math.random();
+  if(r2<0.5){stones++;drops.push("❤️ 1 камінь життя");}
+  else if(r2<0.75){gainXP(150);drops.push("⭐ 150 XP");}
+  else{elemStones++;drops.push("💎 1 камінь стихії");}
+  update();
+  // Показуємо вікно дропу
+  showChestResult(drops);
+  giftCDs.chest=60;
+  const t=setInterval(()=>{giftCDs.chest--;if(giftCDs.chest<=0)clearInterval(t);renderGiftPanel();},1000);
+  renderGiftPanel();
+}
+
+function showChestResult(drops){
+  // Закриваємо панель подарунків
+  giftOverlay.style.display="none";
+  // Створюємо тимчасовий оверлей
+  const overlay=document.createElement("div");
+  overlay.style.cssText="position:fixed;inset:0;background:#000a;z-index:200;display:flex;align-items:center;justify-content:center";
+  const box=document.createElement("div");
+  box.style.cssText="background:#1a1a1a;border:2px solid #e8c060;border-radius:18px;max-width:320px;width:90%;padding:24px;text-align:center";
+  const title=document.createElement("div");
+  title.style.cssText="font-size:36px;margin-bottom:8px";title.textContent="📦";
+  const sub=document.createElement("div");
+  sub.style.cssText="font-size:18px;font-weight:bold;margin-bottom:16px;color:#e8c060";
+  sub.textContent={uk:"Зі скрині випало:",en:"You got from the chest:",ru:"Из сундука выпало:"}[lang];
+  const itemsDiv=document.createElement("div");
+  itemsDiv.style.cssText="display:flex;flex-direction:column;gap:8px;margin-bottom:20px";
+  drops.forEach(d=>{
+    const item=document.createElement("div");
+    item.style.cssText="background:#242424;border:2px solid #e8c060;border-radius:10px;padding:10px;font-size:18px;font-weight:bold";
+    item.textContent=d;
+    itemsDiv.appendChild(item);
+  });
+  const btn=document.createElement("button");
+  btn.textContent={uk:"Забрати!",en:"Take it!",ru:"Забрать!"}[lang];
+  btn.style.cssText="border:0;border-radius:12px;padding:12px 32px;background:#c8a020;color:#fff;font-size:17px;font-weight:bold;cursor:pointer";
+  btn.onclick=()=>document.body.removeChild(overlay);
+  overlay.onclick=e=>{if(e.target===overlay)document.body.removeChild(overlay);};
+  box.appendChild(title);box.appendChild(sub);box.appendChild(itemsDiv);box.appendChild(btn);
+  overlay.appendChild(box);document.body.appendChild(overlay);
+}
+
+function renderGiftPanel(){
+  giftList.innerHTML="";
+  const gifts=[
+    {name:"💰 20 монет",desc:"Безкоштовні монети",cd:giftCDs.coins20,maxCd:5,claim:claimCoins20},
+    {name:"📦 Скриня",desc:"50% 50🪙 | 25% 1🏹 | 25% 3💣\n+ 50% 1❤️ | 25% 150XP | 25% 1💎",cd:giftCDs.chest,maxCd:60,claim:claimChest}
+  ];
+  gifts.forEach(g=>{
+    const row=document.createElement("div");
+    const ready=g.cd<=0;
+    row.style.cssText=`background:#242424;border:2px solid ${ready?"#e8c060":"#555"};border-radius:12px;padding:12px 14px;margin:8px 0;display:flex;align-items:center;justify-content:space-between;gap:10px`;
+    const info=document.createElement("div");
+    info.style.flex="1";
+    info.innerHTML=`<b style="font-size:15px">${g.name}</b><br><small style="color:#aaa;white-space:pre-line">${g.desc}</small>`;
+    const btn=document.createElement("button");
+    btn.textContent=ready?"Забрати":"⏳ "+g.cd+"с";
+    btn.disabled=!ready;
+    btn.style.cssText=`border:0;border-radius:9px;padding:8px 14px;background:${ready?"#c8a020":"#444"};color:#fff;font-size:14px;font-weight:bold;cursor:${ready?"pointer":"default"};white-space:nowrap`;
+    btn.onclick=g.claim;
+    row.appendChild(info);row.appendChild(btn);
+    giftList.appendChild(row);
+  });
+}
+
+function showXPInfo(){
+  // Таблиця заблокованих функцій
+  const locked=[
+    {level:2,name:{uk:"🔮 Заклинання",en:"🔮 Spells",ru:"🔮 Заклинания"}},
+    {level:3,name:{uk:"🎁 Подарунки",en:"🎁 Gifts",ru:"🎁 Подарки"}},
+    {level:4,name:{uk:"💱 Обмін",en:"💱 Trade",ru:"💱 Обмен"}}
+  ];
+  const next=locked.filter(f=>f.level>xpLevel);
+  const overlay=$("xpInfoOverlay");
+  $("xpInfoLevel").textContent=xpLevel;
+  const content=$("xpInfoContent");
+  if(next.length===0){
+    content.innerHTML=`<div style="color:#aaa">${{uk:"Все відкрито!",en:"Everything unlocked!",ru:"Всё открыто!"}[lang]}</div>`;
+  } else {
+    const f=next[0];
+    content.innerHTML=`
+      <div style="color:#aaa;font-size:14px;margin-bottom:8px">${{uk:"На наступному рівні відкриється:",en:"Next level unlocks:",ru:"На следующем уровне откроется:"}[lang]}</div>
+      <div style="background:#242424;border:2px solid #4caf50;border-radius:10px;padding:10px 14px;font-size:16px;font-weight:bold">${f.name[lang]} <span style="color:#aaa;font-size:13px">— ${{uk:"Рівень",en:"Level",ru:"Уровень"}[lang]} ${f.level}</span></div>
+    `;
+  }
+  overlay.style.display="flex";
+}
+
+function updateHunger(){
+  const bar=$("hungerBar"),pct=$("hungerPct");
+  if(!bar)return;
+  bar.style.width=hunger+"%";
+  bar.style.background=hunger>50?"#e05555":hunger>20?"#e07700":"#cc0000";
+  pct.textContent=Math.ceil(hunger)+"%";
+  if(hunger<=0){
+    $("shopOverlay").style.display="none";
+    showResult&&showResult("hunger");
+  }
+}
+
+function renderFoodPanel(){
+  const total=Object.values(foodInv).reduce((a,b)=>a+b,0);
+  foodList.innerHTML="";
+  if(total===0){
+    const d=document.createElement("div");
+    d.style.cssText="color:#aaa;text-align:center;padding:20px";
+    d.textContent=t("noFood");foodList.appendChild(d);return;
+  }
+  const foods=[
+    {key:"apple",      emoji:"🍎",nameKey:"apple",      hunger:5,  descKey:"appleDesc",        effects:{}},
+    {key:"meat",       emoji:"🥩",nameKey:"meat",       hunger:15, descKey:"meatDesc",         effects:{meatDebuff:true}},
+    {key:"pizza",      emoji:"🍕",nameKey:"pizza",      hunger:20, descKey:"pizzaDesc",        effects:{coinBoost:true}},
+    {key:"banana",     emoji:"🍌",nameKey:"banana",     hunger:9,  descKey:"bananaDesc",       effects:{damageBuff:true,coinDebuff:true}},
+    {key:"weirdFruit", emoji:"🍈",nameKey:"weirdFruit", hunger:30, descKey:"weirdFruitDesc",   effects:{freezeHunger:true}},
+    {key:"watermelon", emoji:"🍉",nameKey:"watermelon", hunger:50, descKey:"watermelonDesc",   effects:{discount:true}},
+    {key:"toxicStrawberry",emoji:"🍓",nameKey:"toxicStrawberry",hunger:5,descKey:"toxicDesc",  effects:{hungerSpeedUp:true}},
+    {key:"pineapple",      emoji:"🍍",nameKey:"pineapple",      hunger:70,descKey:"pineappleDesc",effects:{tempFire:true}}
+  ];
+  foods.forEach(f=>{
+    if(!foodInv[f.key])return;
+    const row=document.createElement("div");
+    row.style.cssText="display:flex;align-items:center;justify-content:space-between;background:#242424;border:2px solid #383838;border-radius:12px;padding:10px 14px;margin:6px 0";
+    const info=document.createElement("div");
+    info.innerHTML=`<b>${f.emoji} ${t(f.nameKey)}</b> <span style="color:#aaa;font-size:13px">x${foodInv[f.key]}</span><br><small style="color:#aaa">${t(f.descKey)}</small>`;
+    const btn=document.createElement("button");
+    btn.textContent=t("eat");
+    btn.style.cssText="border:0;border-radius:9px;padding:8px 14px;background:#277cff;color:#fff;font-size:14px;font-weight:bold;cursor:pointer";
+    btn.onclick=()=>eatFood(f.key,f.hunger,f.effects);
+    row.appendChild(info);row.appendChild(btn);foodList.appendChild(row);
+  });
+}
+
+function eatFood(key,hungerAdd,effects){
+  if(!foodInv[key])return;
+  foodInv[key]--;
+  hunger=Math.min(100,hunger+hungerAdd);
+  updateHunger();updateFoodBadge();
+  // XP за з'їдання залежно від ціни товару
+  const foodPrices={apple:40,meat:100,pizza:250,banana:60,weirdFruit:300,watermelon:500,toxicStrawberry:20};
+  const p=foodPrices[key]||0;
+  const eatXP=p>=450?40:p>=300?25:p>=150?15:p>=20?5:0;
+  gainXP(eatXP);
+  if(effects.meatDebuff){
+    const realDmg=damage;damage=damage/1.25;
+    if(meatDebuffTimer)clearTimeout(meatDebuffTimer);
+    meatDebuffActive=true;
+    meatDebuffTimer=setTimeout(()=>{damage=realDmg;meatDebuffActive=false;update();},5000);
+  }
+  if(effects.coinBoost){
+    coinMult=1.1;if(coinMultTimer)clearTimeout(coinMultTimer);
+    coinMultTimer=setTimeout(()=>{coinMult=1;},30000);
+  }
+  if(effects.coinDebuff){
+    bananaCoinDebuff=true;if(bananaCoinTimer)clearTimeout(bananaCoinTimer);
+    bananaCoinTimer=setTimeout(()=>{bananaCoinDebuff=false;},10000);
+  }
+  if(effects.damageBuff){
+    const base=damage;damage=damage*1.15;
+    if(damageBuffTimer)clearTimeout(damageBuffTimer);
+    damageBuffTimer=setTimeout(()=>{damage=base;update();},10000);
+  }
+  if(effects.freezeHunger){
+    hungerFrozen=true;if(hungerFrozenTimer)clearTimeout(hungerFrozenTimer);
+    hungerFrozenTimer=setTimeout(()=>{hungerFrozen=false;},20000);
+  }
+  if(effects.discount){
+    discountActive=true;if(discountTimer)clearTimeout(discountTimer);
+    discountTimer=setTimeout(()=>{discountActive=false;update();},40000);
+  }
+  if(effects.hungerSpeedUp){
+    hungerSpeedMult=1.15;if(hungerSpeedTimer)clearTimeout(hungerSpeedTimer);
+    hungerSpeedTimer=setTimeout(()=>{hungerSpeedMult=1;},10000);
+  }
+  if(effects.tempFire){
+    const prevEl=elActive;
+    elActive="fire";
+    if(tempFireTimer)clearTimeout(tempFireTimer);
+    tempFireTimer=setTimeout(()=>{elActive=prevEl;updateElements();},15000);
+    updateElements();
+  }
+  update();renderFoodPanel();
+}
+
+function updateFoodBadge(){
+  const total=Object.values(foodInv).reduce((a,b)=>a+b,0);
+  foodBadge.textContent=total;
+  foodBadge.style.display=total>0?"inline-block":"none";
+}
+function startHunger(){
+  if(hungerTimerStarted)return;
+  hungerTimerStarted=true;
+  setInterval(()=>{if(hunger>0&&!hungerFrozen){hunger=Math.max(0,hunger-1*hungerSpeedMult);updateHunger();}},23000);
+}
+function hungerHit(){
+  hungerHitCount++;
+  if(hungerHitCount>=37){hungerHitCount=0;if(hunger>0&&!hungerFrozen){hunger=Math.max(0,hunger-1*hungerSpeedMult);updateHunger();}}
+}
+
+function spawn(){let r=Math.random();
+if(r<.000332){monsterType="ftitan";maxHp=50000;hp=50000;nameEl.textContent="Вогняний Титан";setColor("linear-gradient(135deg,#8b1a00,#ff4400)","#ff4400")}
+else if(r<.000987){monsterType="dragon";maxHp=20000;hp=20000;nameEl.textContent="Дракон";setColor("#5c0000","#8b0000")}
+else if(r<.001652){monsterType="giant";maxHp=5000;hp=5000;nameEl.textContent="Зомбі-великан";setColor("linear-gradient(135deg,#1a5c1a 0 50%,#b0b8b0 50% 100%)","#2d8c2d")}
+else if(r<.00427){monsterType="eblaze";maxHp=1500;hp=1500;nameEl.textContent="Електричний блейз";setColor("#0a1a6e","#1a3fff")}
+else if(r<.007){monsterType="blaze";maxHp=500;hp=500;nameEl.textContent="Блейз";setColor("#ffb000","#ff7a00")}
+else if(r<.027){monsterType="wither";maxHp=250;hp=250;nameEl.textContent="Візер-скелет";setColor("#444444","#222")}
+else if(r<.077){monsterType="knight";maxHp=120;hp=120;nameEl.textContent="Зомбі-лицар";setColor("linear-gradient(90deg,#39d353 0 50%,#aaa 50% 100%)","#6f8")}
+else if(r<.277){monsterType="slime";maxHp=50;hp=50;nameEl.textContent="Слайм";setColor("#7cff6b","#7cff6b")}
+else if(r<.747){monsterType="skeleton";maxHp=20;hp=20;nameEl.textContent="Скелет";setColor("#aaa","#aaa")}
+else{monsterType="zombie";maxHp=10;hp=10;nameEl.textContent="Зомбі";setColor("#39d353","#39d353")}
+// Броня 10%
+hasArmor=Math.random()<0.10;
+if(hasArmor){maxHp=Math.round(maxHp*2.5);hp=maxHp;applyArmorStyle();}
+}
+
+function update(){
+  coinsEl.textContent=Math.round(coins);arrowsEl.textContent=Math.round(arrows);stonesEl.textContent=Math.round(stones);spearsEl.textContent=Math.round(spears);bombsEl.textContent=Math.round(bombs);elemStonesEl.textContent=Math.round(elemStones);dmgEl.textContent=fmt(damage);
+  hpText.textContent=fmt(Math.max(0,hp))+" / "+maxHp+" HP";hpBar.style.width=Math.max(0,hp/maxHp*100)+"%";
+  shoot.disabled=!shootReady||arrows<1;cooldownEl.textContent=shootReady?"":t("reload")+cooldown+"с";
+  useBomb.disabled=bombs<1;
+  spearcooldownEl.textContent=spearReady?(spears>0?t("spearReady"):""):t("spearCD")+spearCooldownLeft+"с";
+  // Магазин — предмети
+  buyArrows.disabled=coins<50;
+  buySpear.disabled=coins<150;
+  buyBomb.disabled=coins<60;
+  buyElemStone.disabled=stones<15;
+  // Магазин — покращення
+  $("buyPriceLabel").textContent=price;buy.disabled=coins<price;
+  $("archerPrice").textContent=archerPrice;$("archerDmg").textContent=fmt(archerDmg);buyArcher.disabled=coins<archerPrice;
+  $("gunPrice").textContent=gunPrice;$("gunDmg").textContent=fmt(gunDmg);buyGun.disabled=coins<gunPrice||stones<3;
+  $("minerPrice").textContent=minerPrice;$("minerRate").textContent=fmt(minerRate);buyMiner.disabled=coins<minerPrice;
+  $("goldPrice").textContent=goldPrice;$("goldRate").textContent=fmt(goldRate);buyGoldMiner.disabled=coins<goldPrice;
+  buyVictory.disabled=coins<100000000;
+  // Стихії — оновлення кнопок
+  updateElements();
+  // Бейдж магазину
+  let badge=0;
+  if(coins>=50)badge++;
+  if(coins>=150)badge++;
+  if(coins>=60)badge++;
+  if(coins>=price)badge++;
+  if(coins>=archerPrice)badge++;
+  if(coins>=gunPrice&&stones>=3)badge++;
+  if(coins>=minerPrice)badge++;
+  if(coins>=goldPrice)badge++;
+  if(!elOwned.fire&&coins>=15000)badge++;
+  if(!elOwned.ice&&coins>=25000)badge++;
+  if(!elOwned.poison&&coins>=40000)badge++;
+  if(!elOwned.light&&coins>=60000)badge++;
+  if(!elOwned.demon&&coins>=100000)badge++;
+  if(!elOwned.ultra&&coins>=150000)badge++;
+  buyApple.disabled=coins<(discountActive?32:40);buyMeat.disabled=coins<(discountActive?80:100);
+  buyPizza.disabled=coins<(discountActive?200:250);buyBanana.disabled=coins<(discountActive?48:60);
+  buyWeirdFruit.disabled=coins<(discountActive?240:300);buyWatermelon.disabled=coins<(discountActive?400:500);
+  buyToxic.disabled=coins<(discountActive?16:20);
+  buyPineapple.disabled=coins<(discountActive?320:400);
+  cannonItem.style.opacity=xpLevel>=4?"1":"0.4";
+  $("cannonLockLabel").style.display=xpLevel>=4?"none":"inline";
+  if(xpLevel>=4){$("cannonPriceLabel").textContent=discPrice(cannonPrice);buyCannon.disabled=coins<discPrice(cannonPrice);}
+  else buyCannon.disabled=true;
+  if(!elOwned.supergod&&coins>=250000&&elemStones>=50)badge++;
+  if(coins>=40)badge++;  // яблуко
+  if(coins>=100)badge++; // м'ясо
+  shopBadge.textContent=badge;shopBadge.style.display=badge>0?"inline-block":"none";
+  updateFoodBadge();
+}
+
+function updateElements(){
+  const isFireActive=elActive==="fire",isIceActive=elActive==="ice",isPoisonActive=elActive==="poison",isLightActive=elActive==="light",isDemonActive=elActive==="demon",isUltraActive=elActive==="ultra";
+  if(isFireActive){elActiveLabel.textContent="🔥 Активна стихія: Вогонь";elActiveLabel.style.color="#ff9944";}
+  else if(isIceActive){elActiveLabel.textContent="🧊 Активна стихія: Лід";elActiveLabel.style.color="#5bcfff";}
+  else if(isPoisonActive){elActiveLabel.textContent="☠️ Активна стихія: Отрута";elActiveLabel.style.color="#7fff00";}
+  else if(isLightActive){elActiveLabel.textContent="✨ Активна стихія: Світло";elActiveLabel.style.color="#ffff88";}
+  else if(isDemonActive){elActiveLabel.textContent="😈 Активна стихія: Демон";elActiveLabel.style.color="#cc0000";}
+  else if(isUltraActive){elActiveLabel.textContent="👑 Активна стихія: Ультра Володар";elActiveLabel.style.color="#cc44ff";}
+  else{elActiveLabel.textContent="";elActiveLabel.style.color="#ff9944";}
+
+  function elRender(item,btn,status,key,price,activeClass,activeColor,icon,label){
+    const isActive=elActive===key;
+    item.className="elItem"+(elOwned[key]?" owned":"")+(isActive?" "+activeClass:"");
+    if(!elOwned[key]){btn.textContent=price+" 🪙";btn.disabled=coins<price;btn.className="elBtn";status.textContent="";}
+    else if(isActive){btn.textContent="✅ Активно";btn.disabled=true;btn.className="elBtn active-btn";btn.style.background=activeColor;status.textContent=icon+" Зараз активна";status.style.color=activeColor;}
+    else{btn.textContent="Активувати";btn.disabled=false;btn.className="elBtn activate";btn.style.background="";status.textContent="Куплено";status.style.color="#8f8";}
+  }
+  elRender(elFireItem,elFireBtn,elFireStatus,"fire",15000,"active-el","#ff9944","🔥","Вогонь");
+  elRender(elIceItem,elIceBtn,elIceStatus,"ice",25000,"active-el-ice","#5bcfff","🧊","Лід");
+  elRender(elPoisonItem,elPoisonBtn,elPoisonStatus,"poison",40000,"active-el-poison","#7fff00","☠️","Отрута");
+  elRender(elLightItem,elLightBtn,elLightStatus,"light",60000,"active-el-light","#ffff88","✨","Світло");
+  elRender(elDemonItem,elDemonBtn,elDemonStatus,"demon",100000,"active-el-demon","#cc0000","😈","Демон");
+  elRender(elUltraItem,elUltraBtn,elUltraStatus,"ultra",150000,"active-el-ultra","#cc44ff","👑","Ультра Володар");
+  // SuperGod — особлива кнопка (потребує каменів стихії)
+  const isSuperGodActive=elActive==="supergod";
+  elSuperGodItem.className="elItem"+(elOwned.supergod?" owned":"")+(isSuperGodActive?" active-el-supergod":"");
+  if(!elOwned.supergod){
+    elSuperGodBtn.textContent="250000 🪙 + 50 💎";
+    elSuperGodBtn.disabled=coins<250000||elemStones<50;
+    elSuperGodBtn.className="elBtn";elSuperGodStatus.textContent="";
+  } else if(isSuperGodActive){
+    elSuperGodBtn.textContent="✅ Активно";elSuperGodBtn.disabled=true;
+    elSuperGodBtn.className="elBtn active-btn";elSuperGodBtn.style.background="#ffd700";
+    elSuperGodStatus.textContent="🌟 Зараз активна";elSuperGodStatus.style.color="#ffd700";
+  } else {
+    elSuperGodBtn.textContent="Активувати";elSuperGodBtn.disabled=false;
+    elSuperGodBtn.className="elBtn activate";elSuperGodBtn.style.background="";
+    elSuperGodStatus.textContent="Куплено";elSuperGodStatus.style.color="#8f8";
+  }
+}
+
+function kill(){
+  const xpTable={stoneTitan:2500,ftitan:1000,dragon:400,giant:150,eblaze:50,blaze:20,wither:10,knight:3,slime:1,skeleton:0,zombie:0};
+  gainXP((xpTable[monsterType]||0)*(hasArmor?5:1));
+  // Дроп броні
+  if(hasArmor){
+    const ra=Math.random();
+    if(ra<0.70){foodInv.apple+=2;updateFoodBadge();}
+    else if(ra<0.90){foodInv.banana++;updateFoodBadge();}
+    else{foodInv.meat++;updateFoodBadge();}
+    hasArmor=false;
+  }
+  // Streak бонус
+  const streakable=["zombie","skeleton","slime"];
+  if(streakable.includes(monsterType)){
+    if(streakType===monsterType){streakCount++;}else{streakType=monsterType;streakCount=1;}
+    const bonuses={zombie:{3:1,5:2},skeleton:{3:3,5:5},slime:{3:9,5:18}};
+    const b=bonuses[monsterType];
+    if(b&&b[streakCount])gainXP(b[streakCount]);
+    if(streakCount>=5)streakCount=0; // скидаємо після 5
+  } else {streakType="";streakCount=0;}
+  if(monsterType==="stoneTitan"){addCoins(25000);elemStones+=5;}
+  else if(monsterType==="ftitan"){addCoins(17000);stones+=50;for(let i=0;i<3;i++){gunCount++;gunDmg*=1.2;}if(!gunTimer)gunTimer=setInterval(()=>{if(hp>0&&gunCount){hp-=gunDmg*gunCount;setColor("#f33","#f00");fire.style.display="block";setTimeout(()=>{fire.style.display="none";restoreColor()},400);if(hp<=0)kill();update()}},3400);}
+  else if(monsterType==="dragon"){addCoins(6000);stones+=50;gunCount++;gunDmg*=1.2;if(!gunTimer)gunTimer=setInterval(()=>{if(hp>0&&gunCount){hp-=gunDmg*gunCount;setColor("#f33","#f00");fire.style.display="block";setTimeout(()=>{fire.style.display="none";restoreColor()},400);if(hp<=0)kill();update()}},3400);}
+  else if(monsterType==="giant"){addCoins(2000);spears+=20;stones+=Math.floor(Math.random()*15)+1}
+  else if(monsterType==="eblaze"){addCoins(Math.floor(Math.random()*196)+237);stones+=12}
+  else if(monsterType==="blaze"){addCoins(Math.floor(Math.random()*125)+132);if(Math.random()<.76)stones+=Math.floor(Math.random()*4)+5}
+  else if(monsterType==="wither"){addCoins(Math.floor(Math.random()*77)+56);if(Math.random()<.43)stones+=Math.floor(Math.random()*2)+2}
+  else if(monsterType==="knight"){addCoins(Math.floor(Math.random()*30)+27);arrows+=Math.floor(Math.random()*3)+1}
+  else if(monsterType==="slime")addCoins(Math.floor(Math.random()*17)+7);
+  else if(monsterType==="skeleton")addCoins(Math.floor(Math.random()*6)+4);
+  else{addCoins(Math.floor(Math.random()*3)+2);if(Math.random()<.033){hunger=Math.max(0,hunger-3);updateHunger();}}
+  spawn()
+}
+function flashMonster(color){
+  monster.style.transition="background .05s,box-shadow .05s";
+  monster.style.background=color;
+  monster.style.boxShadow="0 0 50px "+color;
+  setTimeout(()=>{monster.style.transition="transform .08s ease,background .1s,box-shadow .1s";restoreColor()},200);
+}
+
+function demonStrike(){
+  flashMonster("#cc0000");
+  setTimeout(()=>{hp-=damage*3;if(hp<=0){kill();update();return;}flashMonster("#111111");
+  setTimeout(()=>{hp-=damage*3;if(hp<=0){kill();update();return;}flashMonster("#cc0000");
+  setTimeout(()=>{hp-=damage*3;if(hp<=0)kill();update();},240);},240);},240);
+}
+
+function lightningStrike(){
+  flashMonster("#0000aa");
+  hp-=damage*10;if(hp<=0)kill();update();
+}
+
+function energyStrike(){
+  let count=0;
+  const interval=setInterval(()=>{
+    flashMonster("#ffff00");
+    hp-=damage*3;if(hp<=0){kill();update();clearInterval(interval);return;}
+    update();count++;
+    if(count>=5){clearInterval(interval);
+      // Суперсила на 3с
+      superPowerActive=true;superPowerEmoji.style.display="block";
+      superPowerBar.style.transition="none";superPowerBar.style.width="100%";superPowerBar.style.background="#ffe000";
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{superPowerBar.style.transition="width 3s linear";superPowerBar.style.width="0%";}));
+      if(superPowerTimer)clearTimeout(superPowerTimer);
+      superPowerTimer=setTimeout(()=>{superPowerActive=false;superPowerEmoji.style.display="none";},3000);
+    }
+  },170);
+}
+
+function laserStrike(){
+  const laserEmoji=document.createElement("span");
+  laserEmoji.textContent="☣️";
+  laserEmoji.style.cssText="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:80px;z-index:4;pointer-events:none";
+  monster.appendChild(laserEmoji);
+  let ticks=0,total=Math.floor(500/60);
+  const interval=setInterval(()=>{
+    flashMonster("#00ffaa");
+    hp-=damage/1.2;if(hp<=0){kill();update();clearInterval(interval);monster.removeChild(laserEmoji);return;}
+    update();ticks++;
+    if(ticks>=total){clearInterval(interval);if(monster.contains(laserEmoji))monster.removeChild(laserEmoji);}
+  },60);
+}
+
+function applyElementalSword(baseDmg){
+  let d=baseDmg,active=elActive;
+  const dmgMult=superPowerActive?2.2:1;
+  if(superPowerActive){flashMonster("#ffffbb");}
+
+  if(active==="supergod"){
+    if(Math.random()<.20){d+=damage*1.15;flashMonster("#ff6600");}
+    if(Math.random()<.20){coins+=Math.floor(damage/4);d*=1.3;flashMonster("#7ae8ff");}
+    if(Math.random()<.15){d+=damage/4;flashMonster("#2d8b00");}
+    if(Math.random()<.15){coins+=Math.floor(damage*1.5);flashMonster("#ffff99");}
+    if(Math.random()<.10){setTimeout(demonStrike,100);}
+    if(Math.random()<.10){setTimeout(lightningStrike,100);}
+    if(Math.random()<.05){setTimeout(energyStrike,100);}
+    if(Math.random()<.05){setTimeout(laserStrike,100);}
+    return d*dmgMult;
+  }
+  if(active==="ultra"){
+    if(Math.random()<.15){d+=damage/4;flashMonster("#2d8b00");}
+    if(Math.random()<.35){coins+=Math.floor(damage/4);d*=1.3;flashMonster("#7ae8ff");}
+    if(Math.random()<.05){setTimeout(demonStrike,100);}
+    return d*dmgMult;
+  }
+  if(active==="fire"&&Math.random()<.20){d+=damage*1.15;flashMonster("#ff6600");}
+  else if(active==="ice"&&Math.random()<.30){coins+=Math.floor(damage/4);d*=1.3;flashMonster("#7ae8ff");}
+  else if(active==="poison"&&Math.random()<.60){d+=damage/4;flashMonster("#2d8b00");}
+  else if(active==="light"&&Math.random()<.07){coins+=Math.floor(damage*1.5);flashMonster("#ffff99");}
+  else if(active==="demon"&&Math.random()<.05){setTimeout(demonStrike,100);}
+  return d*dmgMult;
+}
+function hit(x){
+  if(hasArmor&&Math.random()<0.05){update();return;} // MISS
+  hp-=x;
+  if(flasherActive){setTimeout(()=>{if(hp>0){flashMonster("#ffff99");hp-=damage*1.3;if(hp<=0)kill();update();}},500);}
+  if(hp<=0)kill();
+  hungerHit();update();
+}
+
+// Спис
+function startHold(){
+  holding=true;holdStart=Date.now();
+  if(spearReady&&spears>0){
+    spearChargeWrap.style.display="block";spearChargeBar.style.width="0%";spearChargeBar.style.boxShadow="0 0 6px #ffe000";
+    holdAnim=setInterval(()=>{let p=Math.min(100,(Date.now()-holdStart)/1200*100);spearChargeBar.style.width=p+"%";if(p>=100){spearChargeBar.style.background="#ffffff";spearChargeBar.style.boxShadow="0 0 10px #fff";}},16);
+  }
+}
+function endHold(){
+  if(!holding)return;holding=false;clearInterval(holdAnim);
+  let elapsed=Date.now()-holdStart;
+  spearChargeWrap.style.display="none";spearChargeBar.style.width="0%";spearChargeBar.style.background="#ffe000";spearChargeBar.style.boxShadow="0 0 6px #ffe000";
+  if(elapsed>=1200&&spearReady&&spears>0){
+    spears--;spearReady=false;
+    if(monsterType==="eblaze"&&Math.random()<.28)coins+=5;
+    else if(monsterType==="ftitan"&&Math.random()<.07)coins+=10;
+    else if(monsterType==="skeleton"&&Math.random()<.12)arrows++;
+    else if(monsterType==="slime"){let r=Math.random();if(r<.06)coins+=Math.floor(Math.random()*2)+2;else if(r<.30)coins++}
+    monster.style.transform="scale(.80)";setTimeout(()=>{monster.style.transform="scale(1.05)"},150);setTimeout(()=>{monster.style.transform="scale(1)"},260);
+    hit(damage*1.4);
+    spearCooldownLeft=2;
+    spearCooldownTimer=setInterval(()=>{spearCooldownLeft--;if(spearCooldownLeft<=0){clearInterval(spearCooldownTimer);spearReady=true;spearCooldownLeft=0}update()},750);
+  } else {
+    // звичайний клік
+    monster.style.transform="scale(.88)";setTimeout(()=>{monster.style.transform="scale(1)"},120);
+    if(monsterType==="eblaze"){if(Math.random()<.28)coins+=5;hit(applyElementalSword(damage))}
+    else if(monsterType==="ftitan"){if(Math.random()<.07)coins+=10;hit(applyElementalSword(damage))}
+    else if(monsterType==="knight"){let crit=Math.random()<.19;let dmgK=damage;if(crit)dmgK+=damage*2.4;dmgK=applyElementalSword(dmgK);hp-=dmgK;if(hp<=0)kill();update()}
+    else{if(monsterType==="skeleton"&&Math.random()<.12)arrows++;if(monsterType==="slime"){let r=Math.random();if(r<.06)coins+=Math.floor(Math.random()*2)+2;else if(r<.30)coins++}hit(applyElementalSword(damage))}
+  }
+  update();
+}
+monster.addEventListener("mousedown",startHold);
+monster.addEventListener("mouseup",endHold);
+monster.addEventListener("mouseleave",()=>{if(holding){holding=false;clearInterval(holdAnim);spearChargeWrap.style.display="none";spearChargeBar.style.width="0%"}});
+monster.addEventListener("touchstart",e=>{e.preventDefault();startHold()},{passive:false});
+monster.addEventListener("touchend",e=>{e.preventDefault();endHold()},{passive:false});
+
+// Кнопки дій
+shoot.onclick=()=>{if(!shootReady||!arrows)return;arrows--;shootReady=false;cooldown=10;hit(damage*4.2);let t=setInterval(()=>{cooldown--;if(cooldown<=0){clearInterval(t);shootReady=true;cooldown=0}update()},1000)}
+useBomb.onclick=()=>{if(bombs<1)return;bombs--;hit(damage*1.7)}
+
+// Магазин — предмети
+buyArrows.onclick=()=>{if(coins<50)return;coins-=50;arrows+=5;update()}
+buySpear.onclick=()=>{if(coins<150)return;coins-=150;spears+=5;update()}
+buyBomb.onclick=()=>{if(coins<60)return;coins-=60;bombs++;update()}
+
+// Магазин — покращення
+buy.onclick=()=>{if(coins<price)return;coins-=price;damage+=.5+purchase*.2;purchase++;price=Math.ceil(price*1.6);gainXP(5);update()}
+buyArcher.onclick=()=>{if(coins<archerPrice)return;coins-=archerPrice;archerCount++;archerDmg*=1.05;archerPrice=Math.ceil(archerPrice*1.5);gainXP(15);if(!archerTimer)archerTimer=setInterval(()=>{if(hp>0&&archerCount)hit(archerDmg*archerCount)},1000/1.3);update()}
+buyGun.onclick=()=>{if(coins<gunPrice||stones<3)return;coins-=gunPrice;stones-=3;gunCount++;gunDmg*=1.2;gunPrice=Math.ceil(gunPrice*1.6);gainXP(45);if(!gunTimer)gunTimer=setInterval(()=>{if(hp>0&&gunCount){hp-=gunDmg*gunCount;setColor("#f33","#f00");fire.style.display="block";setTimeout(()=>{fire.style.display="none";restoreColor()},400);if(hp<=0)kill();update()}},3400);update()}
+buyMiner.onclick=()=>{if(coins<minerPrice)return;coins-=minerPrice;minerCount++;minerPrice=Math.ceil(minerPrice*2.5);minerRate*=2;if(!minerTimer)minerTimer=setInterval(()=>{stones+=minerRate;update()},15000);update()}
+
+elFireBtn.onclick=()=>{
+  if(!elOwned.fire){if(coins<15000)return;coins-=15000;elOwned.fire=true;}
+  elActive="fire";update();
+}
+elIceBtn.onclick=()=>{
+  if(!elOwned.ice){if(coins<25000)return;coins-=25000;elOwned.ice=true;}
+  elActive="ice";update();
+}
+elPoisonBtn.onclick=()=>{
+  if(!elOwned.poison){if(coins<40000)return;coins-=40000;elOwned.poison=true;}
+  elActive="poison";update();
+}
+elLightBtn.onclick=()=>{
+  if(!elOwned.light){if(coins<60000)return;coins-=60000;elOwned.light=true;}
+  elActive="light";update();
+}
+elDemonBtn.onclick=()=>{
+  if(!elOwned.demon){if(coins<100000)return;coins-=100000;elOwned.demon=true;}
+  elActive="demon";update();
+}
+elUltraBtn.onclick=()=>{
+  if(!elOwned.ultra){if(coins<150000)return;coins-=150000;elOwned.ultra=true;}
+  elActive="ultra";update();
+}
+elSuperGodBtn.onclick=()=>{
+  if(!elOwned.supergod){if(coins<250000||elemStones<50)return;coins-=250000;elemStones-=50;elOwned.supergod=true;}
+  elActive="supergod";update();
+}
+buyElemStone.onclick=()=>{if(stones<15)return;stones-=15;elemStones++;gainXP(25);update();}
+buyGoldMiner.onclick=()=>{
+  if(coins<goldPrice)return;
+  coins-=goldPrice;goldMinerCount++;goldPrice=Math.ceil(goldPrice*2.5);goldRate*=1.8;
+  if(!goldTimer)goldTimer=setInterval(()=>{coins+=goldRate*coinMult*(bananaCoinDebuff?0.98:1);update();},1000);
+  update();
+}
+
+function showResult(type){
+  const rs=$("resultScreen"),title=$("resultTitle"),msg=$("resultMsg"),btnC=$("btnContinue"),btnR=$("btnRestart");
+  if(type==="hunger"){
+    title.textContent="💀 "+t("starveTitle");
+    msg.textContent=t("starveMsg");
+    btnC.style.display="none";
+  } else if(type===true){
+    title.textContent="🏆 "+t("winTitle");
+    msg.textContent=t("winMsg");
+    btnC.style.display="inline-block";
+    btnC.textContent=t("keepPlaying");
+  } else {
+    title.textContent="😞 "+t("loseTitle");
+    msg.textContent=t("loseMsg");
+    btnC.style.display="none";
+  }
+  btnR.textContent=t("restart");
+  rs.classList.add("show");
+}
+function closeResult(){$("resultScreen").classList.remove("show");}
+function restartGame(){location.reload();}
+
+buyApple.onclick=()=>{const p=discountActive?32:40;if(coins<p)return;coins-=p;foodInv.apple++;gainXP(3);updateFoodBadge();update();}
+buyMeat.onclick=()=>{const p=discountActive?80:100;if(coins<p)return;coins-=p;foodInv.meat++;updateFoodBadge();update();}
+buyPizza.onclick=()=>{const p=discountActive?200:250;if(coins<p)return;coins-=p;foodInv.pizza++;gainXP(20);updateFoodBadge();update();}
+buyBanana.onclick=()=>{const p=discountActive?48:60;if(coins<p)return;coins-=p;foodInv.banana++;updateFoodBadge();update();}
+buyWeirdFruit.onclick=()=>{const p=discountActive?240:300;if(coins<p)return;coins-=p;foodInv.weirdFruit++;gainXP(30);updateFoodBadge();update();}
+buyWatermelon.onclick=()=>{const p=discountActive?400:500;if(coins<p)return;coins-=p;foodInv.watermelon++;gainXP(50);updateFoodBadge();update();}
+buyToxic.onclick=()=>{const p=discountActive?16:20;if(coins<p)return;coins-=p;foodInv.toxicStrawberry++;updateFoodBadge();update();}
+buyPineapple.onclick=()=>{const p=discountActive?320:400;if(coins<p)return;coins-=p;foodInv.pineapple++;updateFoodBadge();update();}
+buyCannon.onclick=()=>{const p=discPrice(cannonPrice);if(coins<p)return;coins-=p;cannonCount++;cannonPrice=Math.ceil(cannonPrice*1.4);cannonInterval/=1.7;
+  if(cannonTimer)clearInterval(cannonTimer);
+  cannonTimer=setInterval(()=>{if(hp>0&&cannonCount)hit(cannonDmg*cannonCount);},cannonInterval*1000);
+  update();}
+giveHungerBtn.onclick=()=>{if(!adminUnlocked)return;hunger=Math.max(0,Math.min(100,Number($("setHunger").value)||0));updateHunger();adminMsg.textContent="Hunger: "+hunger+"%";}
+
+buyVictory.onclick=()=>{
+  if(coins<100000000)return;
+  coins-=100000000;
+  $("shopOverlay").style.display="none";
+  if(!adminUsed||bugTestMode)showResult(true);
+  else showResult(false);
+}
+
+spawn();update();startHunger();updateSpellBtn();updateGiftBtn();updateTradeBtn();</script></body></html>
