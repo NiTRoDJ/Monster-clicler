@@ -1,4 +1,4 @@
-<!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>Monster Clicker 1.6</title><style>
+<!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>Monster Clicker 1.6.5</title><style>
 *{box-sizing:border-box}body{margin:0;background:#151515;color:#fff;font-family:Arial,sans-serif;text-align:center}
 #langScreen{position:fixed;inset:0;background:#151515;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
 #langScreen h2{font-size:26px;margin:0 0 10px}
@@ -152,6 +152,7 @@
     <button class="tab" id="tabUpgrades">⬆️ Покращення</button>
     <button class="tab" id="tabElements">🔮 Стихії</button>
     <button class="tab" id="tabFood">🍖 Їжа</button>
+    <button class="tab" id="tabMgShop">🎮 Міні-гра</button>
   </div>
   <!-- Предмети -->
   <div class="shopSection active" id="secItems">
@@ -194,8 +195,8 @@
       <div class="info"><b>💰 Золотий майнер</b><small><span id="goldRate">15</span> 🪙 / сек | Ціна: <span id="goldPrice">2500</span> 🪙</small></div>
       <button id="buyGoldMiner">Купити</button>
     </div>
-    <div class="shopItem" style="border-color:#ffd700">
-      <div class="info"><b id="victoryItemName">🏆 Перемога</b><small id="victoryItemDesc">100,000,000 🪙</small></div>
+    <div class="shopItem" id="victoryItem" style="border-color:#ffd700">
+      <div class="info"><b id="victoryItemName">🏆 Перемога</b><small id="victoryItemDesc">100,000,000 🪙</small><br><small id="victoryLockLabel" style="color:#f80;display:none">🔒 Рівень 15</small></div>
       <button id="buyVictory">Купити</button>
     </div>
     <div class="shopItem" id="cannonItem">
@@ -300,25 +301,35 @@
       <button id="buyPineapple">400 🪙</button>
     </div>
   </div>
+  <!-- Міні-гра покупки -->
+  <div class="shopSection" id="secMgShop">
+    <div style="color:#aaa;font-size:13px;margin-bottom:6px">Купуються раз. Можна активувати до 3 одночасно.</div>
+    <div id="mgActiveLabel" style="font-size:13px;color:#8f8;margin-bottom:8px;min-height:16px"></div>
+    <div class="elItem" id="mgItem_defender"><div class="info"><b>🛡️ Захисник</b><small>1 урон/0.5с монстрам на лінії програшу</small><span class="elStatus" id="mgStatus_defender"></span></div><button class="elBtn" id="mgBtn_defender">500 🪙</button></div>
+    <div class="elItem" id="mgItem_electric"><div class="info"><b>⚡ Електричний струм</b><small>Кожні 5с вбиває всіх на випадковій лінії</small><span class="elStatus" id="mgStatus_electric"></span></div><button class="elBtn" id="mgBtn_electric">1000 🪙</button></div>
+    <div class="elItem" id="mgItem_pistols"><div class="info"><b>🔫 Пістолети</b><small>1 урон/с у першій і останній лінії</small><span class="elStatus" id="mgStatus_pistols"></span></div><button class="elBtn" id="mgBtn_pistols">200 🪙</button></div>
+    <div class="elItem" id="mgItem_rocket"><div class="info"><b>🚀 Ракета</b><small>Кожні 10с — всі монстри гинуть (спалах)</small><span class="elStatus" id="mgStatus_rocket"></span></div><button class="elBtn" id="mgBtn_rocket">1700 🪙</button></div>
+    <div class="elItem" id="mgItem_cannon2"><div class="info"><b>💣 Гармата</b><small>2 урон/с випадковому монстру</small><span class="elStatus" id="mgStatus_cannon2"></span></div><button class="elBtn" id="mgBtn_cannon2">50 🪙</button></div>
+  </div>
 </div>
 </div>
 
 <!-- Міні-гра -->
-<div id="mgOverlay" style="display:none;position:fixed;inset:0;background:#000d;z-index:200;overflow:hidden">
-<div style="background:#111;border:2px solid #4a4;border-radius:18px;max-width:400px;width:95%;margin:20px auto;padding:16px;position:relative">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+<div id="mgOverlay" style="display:none;position:fixed;inset:0;background:#000d;z-index:200;overflow-y:auto;-webkit-overflow-scrolling:touch">
+<div style="background:#111;border:2px solid #4a4;border-radius:18px;max-width:400px;width:95%;margin:10px auto;padding:12px;position:relative;box-sizing:border-box">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
     <div>
-      <b style="font-size:18px">🎮 Міні-гра</b>
-      <span style="color:#aaa;font-size:14px;margin-left:10px">⭐ Рекорд: <b id="mgRecord">0</b></span>
+      <b style="font-size:16px">🎮 Міні-гра</b>
+      <span style="color:#aaa;font-size:13px;margin-left:8px">⭐ <b id="mgRecord">0</b></span>
     </div>
-    <button id="mgClose" style="border:0;background:none;color:#aaa;font-size:24px;cursor:pointer">✕</button>
+    <button id="mgClose" style="border:0;background:none;color:#aaa;font-size:24px;cursor:pointer;line-height:1">✕</button>
   </div>
-  <div style="color:#aaa;font-size:13px;margin-bottom:8px">
-    🪙 Нарахується: <b id="mgCoins">0</b> | 💥 Damage: <b id="mgDmgLabel">1</b>
+  <div style="color:#aaa;font-size:13px;margin-bottom:6px">
+    🪙 <b id="mgCoins">0</b> | 💥 <b id="mgDmgLabel">1</b>
   </div>
-  <canvas id="mgCanvas" width="368" height="320" style="background:#1a1a1a;border-radius:10px;display:block;cursor:crosshair;touch-action:none"></canvas>
-  <div id="mgStatus" style="text-align:center;margin-top:10px;font-size:15px;color:#8f8"></div>
-  <div style="text-align:center;margin-top:8px">
+  <canvas id="mgCanvas" style="background:#1a1a1a;border-radius:10px;display:block;cursor:crosshair;touch-action:none;width:100%;max-width:100%"></canvas>
+  <div id="mgStatus" style="text-align:center;margin-top:8px;font-size:14px;color:#8f8"></div>
+  <div style="text-align:center;margin-top:6px">
     <button id="mgStartBtn" style="border:0;border-radius:10px;padding:10px 28px;background:#277cff;color:#fff;font-size:16px;font-weight:bold;cursor:pointer">▶ Старт</button>
   </div>
 </div>
@@ -618,8 +629,8 @@ const useBomb=$("useBomb");
 const buy=$("buyUpgrade"),buyArrows=$("buyArrows"),buySpear=$("buySpear"),buyBomb=$("buyBomb");
 const buyArcher=$("buyArcher"),buyGun=$("buyGun"),buyMiner=$("buyMiner"),buyGoldMiner=$("buyGoldMiner"),buyVictory=$("buyVictory");
 const shopBtn=$("shopBtn"),shopOverlay=$("shopOverlay"),shopClose=$("shopClose"),shopBadge=$("shopBadge");
-const tabItems=$("tabItems"),tabUpgrades=$("tabUpgrades"),tabElements=$("tabElements"),tabFood=$("tabFood");
-const secItems=$("secItems"),secUpgrades=$("secUpgrades"),secElements=$("secElements"),secFood=$("secFood");
+const tabItems=$("tabItems"),tabUpgrades=$("tabUpgrades"),tabElements=$("tabElements"),tabFood=$("tabFood"),tabMgShop=$("tabMgShop");
+const secItems=$("secItems"),secUpgrades=$("secUpgrades"),secElements=$("secElements"),secFood=$("secFood"),secMgShop=$("secMgShop");
 const foodBtn=$("foodBtn"),foodOverlay=$("foodOverlay"),foodClose=$("foodClose"),foodBadge=$("foodBadge"),foodList=$("foodList");
 const bossBtn=$("bossBtn"),bossOverlay=$("bossOverlay"),bossClose=$("bossClose"),bossList=$("bossList");
 const giftBtn=$("giftBtn"),giftOverlay=$("giftOverlay"),giftClose=$("giftClose"),giftList=$("giftList");
@@ -629,6 +640,11 @@ const mgCanvas=$("mgCanvas"),mgCtx=mgCanvas.getContext("2d");
 const mgStartBtn=$("mgStartBtn"),mgStatus=$("mgStatus"),mgRecordEl=$("mgRecord"),mgCoinsEl=$("mgCoins"),mgDmgLabel=$("mgDmgLabel");
 let mgRecord=0,mgCDLeft=0,mgCDTimer=null,mgRunning=false;
 let mgEnemies=[],mgBaseHp=10,mgKilled=0,mgFrame=null;
+// Апгрейди міні-гри
+const MG_MAX_ACTIVE=3;
+let mgUpgrades={defender:{owned:false,active:false},electric:{owned:false,active:false},pistols:{owned:false,active:false},rocket:{owned:false,active:false},cannon2:{owned:false,active:false}};
+let mgDefTimer=null,mgElecTimer=null,mgPistTimer=null,mgRocketTimer=null,mgCannon2Timer=null;
+let mgFlashActive=false;
 const spellBtn=$("spellBtn"),spellOverlay=$("spellOverlay"),spellClose=$("spellClose"),spellList=$("spellList");
 const armyBtn=$("armyBtn"),armyOverlay=$("armyOverlay"),armyClose=$("armyClose"),armyList=$("armyList");
 const buyApple=$("buyApple"),buyMeat=$("buyMeat"),buyPizza=$("buyPizza"),buyBanana=$("buyBanana"),buyWeirdFruit=$("buyWeirdFruit"),buyWatermelon=$("buyWatermelon"),buyToxic=$("buyToxic"),buyPineapple=$("buyPineapple"),giveHungerBtn=$("giveHungerBtn");
@@ -651,14 +667,15 @@ shopBtn.onclick=()=>shopOverlay.style.display="block";
 shopClose.onclick=()=>shopOverlay.style.display="none";
 shopOverlay.onclick=e=>{if(e.target===shopOverlay)shopOverlay.style.display="none"};
 function switchTab(active){
-  [tabItems,tabUpgrades,tabElements,tabFood].forEach(t=>t.classList.remove("active"));
-  [secItems,secUpgrades,secElements,secFood].forEach(s=>s.classList.remove("active"));
+  [tabItems,tabUpgrades,tabElements,tabFood,tabMgShop].forEach(t=>t.classList.remove("active"));
+  [secItems,secUpgrades,secElements,secFood,secMgShop].forEach(s=>s.classList.remove("active"));
   active.tab.classList.add("active");active.sec.classList.add("active");
 }
 tabItems.onclick=()=>switchTab({tab:tabItems,sec:secItems});
 tabUpgrades.onclick=()=>switchTab({tab:tabUpgrades,sec:secUpgrades});
 tabElements.onclick=()=>switchTab({tab:tabElements,sec:secElements});
 tabFood.onclick=()=>switchTab({tab:tabFood,sec:secFood});
+tabMgShop.onclick=()=>{switchTab({tab:tabMgShop,sec:secMgShop});renderMgShop();};
 
 foodBtn.onclick=()=>{renderFoodPanel();foodOverlay.style.display="block";}
 foodClose.onclick=()=>foodOverlay.style.display="none";
@@ -883,49 +900,133 @@ function buyXpSeller(){
   update();renderArmyPanel();
 }
 
+function renderMgShop(){
+  const active=Object.values(mgUpgrades).filter(u=>u.active).length;
+  $("mgActiveLabel").textContent=`Активних: ${active}/${MG_MAX_ACTIVE}`;
+  const items=[
+    {key:"defender",price:500},{key:"electric",price:1000},{key:"pistols",price:200},
+    {key:"rocket",price:1700},{key:"cannon2",price:50}
+  ];
+  items.forEach(({key,price})=>{
+    const u=mgUpgrades[key];
+    const item=$("mgItem_"+key),btn=$("mgBtn_"+key),status=$("mgStatus_"+key);
+    item.className="elItem"+(u.owned?" owned":"")+(u.active?" active-el":"");
+    if(!u.owned){btn.textContent=price+" 🪙";btn.disabled=coins<price;btn.className="elBtn";status.textContent="";}
+    else if(u.active){btn.textContent="✅ Активно";btn.disabled=false;btn.className="elBtn active-btn";btn.style.background="#285";status.textContent="Активно";status.style.color="#8f8";}
+    else{btn.textContent="Активувати";btn.disabled=active>=MG_MAX_ACTIVE;btn.className="elBtn activate";btn.style.background="";status.textContent="Куплено";status.style.color="#aaa";}
+    btn.onclick=()=>{
+      if(!u.owned){if(coins<price)return;coins-=price;u.owned=true;update();}
+      if(u.active){u.active=false;}
+      else{if(active>=MG_MAX_ACTIVE)return;u.active=true;}
+      renderMgShop();
+    };
+  });
+}
+
+// Логіка апгрейдів під час гри
+function mgStartUpgrades(){
+  // Захисник — 1 урон/0.5с монстрам близько до лінії
+  if(mgUpgrades.defender.active){
+    mgDefTimer=setInterval(()=>{
+      mgEnemies.forEach(e=>{if(e.y+e.r>=mgH()-30){e.hp-=1;if(e.hp<=0)mgKillEnemy(e);}});
+    },500);
+  }
+  // Електричний струм — кожні 5с вбиває лінію
+  if(mgUpgrades.electric.active){
+    mgElecTimer=setInterval(()=>{
+      const cols=Math.floor(mgW()/60);
+      const col=Math.floor(Math.random()*cols);
+      const x1=col*60,x2=x1+60;
+      const killed=mgEnemies.filter(e=>e.x>=x1&&e.x<=x2);
+      killed.forEach(e=>{
+        // Білий круг-залишок
+        mgGhosts.push({x:e.x,y:e.y,r:e.r,t:0.4});
+        mgKillEnemy(e);
+      });
+    },5000);
+  }
+  // Пістолети — 1 урон/с в першій і останній колонці
+  if(mgUpgrades.pistols.active){
+    mgPistTimer=setInterval(()=>{
+      const lastX=(Math.floor(mgW()/60)-1)*60;
+      mgEnemies.forEach(e=>{if(e.x<60||e.x>lastX){e.hp-=1;if(e.hp<=0)mgKillEnemy(e);}});
+    },1000);
+  }
+  // Ракета — кожні 10с вбиває всіх
+  if(mgUpgrades.rocket.active){
+    mgRocketTimer=setInterval(()=>{
+      mgFlashActive=true;
+      setTimeout(()=>{mgFlashActive=false;},400);
+      [...mgEnemies].forEach(e=>mgKillEnemy(e));
+    },30000);
+  }
+  // Гармата — 2 урон/с випадковому
+  if(mgUpgrades.cannon2.active){
+    mgCannon2Timer=setInterval(()=>{
+      if(mgEnemies.length>0){const e=mgEnemies[Math.floor(Math.random()*mgEnemies.length)];e.hp-=2;if(e.hp<=0)mgKillEnemy(e);}
+    },1000);
+  }
+}
+function mgStopUpgrades(){
+  [mgDefTimer,mgElecTimer,mgPistTimer,mgRocketTimer,mgCannon2Timer].forEach(t=>t&&clearInterval(t));
+  mgDefTimer=mgElecTimer=mgPistTimer=mgRocketTimer=mgCannon2Timer=null;
+}
+
+// Функція вбивства монстра (враховує рекорд)
+function mgKillEnemy(e){
+  const idx=mgEnemies.indexOf(e);
+  if(idx>=0){mgRecord+=e.maxHp;mgKilled++;mgEnemies.splice(idx,1);gainXP(5);mgRecordEl.textContent=mgRecord;mgCoinsEl.textContent=Math.floor(mgRecord/50)*100;}
+}
+
 // ===== МІНІ-ГРА =====
-const MG_W=368,MG_H=320,MG_SPEED=MG_H/15; // px/sec — 15с до низу
 const MG_COLORS=["#e05555","#e08820","#55aa55","#5588dd","#aa55dd","#dd5599"];
+function mgW(){return mgCanvas.width;}
+function mgH(){return mgCanvas.height;}
+function mgSpeed(){return mgH()/15;}
 
 function mgEnemyHp(){return Math.round(mgBaseHp*Math.pow(1.1,mgKilled));}
 
 function mgSpawnWave(){
   const multi=Math.random()<0.5?1:Math.floor(Math.random()*3)+2;
-  const cols=MG_W/60;
+  const cols=Math.floor(mgW()/60);
   const used=[];
   for(let i=0;i<multi;i++){
     let col;do{col=Math.floor(Math.random()*cols);}while(used.includes(col)&&used.length<cols);
     used.push(col);
     const hp=mgEnemyHp();
-    mgEnemies.push({x:col*60+30,y:-30,hp,maxHp:hp,color:MG_COLORS[Math.floor(Math.random()*MG_COLORS.length)],r:24});
+    mgEnemies.push({x:col*60+30,y:-30,hp,maxHp:hp,color:MG_COLORS[Math.floor(Math.random()*MG_COLORS.length)],r:22});
   }
 }
 
+let mgLast=0,mgSpawnTimer=0,mgSpawnInterval=3;
+let mgGhosts=[];
+
 function mgDraw(dt){
-  mgCtx.clearRect(0,0,MG_W,MG_H);
-  // Лінія програшу
+  const W=mgW(),H=mgH();
+  if(mgFlashActive){mgCtx.fillStyle="#fff";mgCtx.fillRect(0,0,W,H);return;}
+  mgCtx.clearRect(0,0,W,H);
   mgCtx.strokeStyle="#e05555";mgCtx.lineWidth=2;mgCtx.setLineDash([6,4]);
-  mgCtx.beginPath();mgCtx.moveTo(0,MG_H-10);mgCtx.lineTo(MG_W,MG_H-10);mgCtx.stroke();
+  mgCtx.beginPath();mgCtx.moveTo(0,H-10);mgCtx.lineTo(W,H-10);mgCtx.stroke();
   mgCtx.setLineDash([]);
+  mgGhosts=mgGhosts.filter(g=>{g.t-=dt;return g.t>0;});
+  mgGhosts.forEach(g=>{
+    mgCtx.beginPath();mgCtx.arc(g.x,g.y,g.r,0,Math.PI*2);
+    mgCtx.strokeStyle=`rgba(255,255,255,${g.t/0.4})`;mgCtx.lineWidth=2;mgCtx.stroke();
+  });
   let lost=false;
   mgEnemies.forEach(e=>{
-    e.y+=MG_SPEED*dt;
-    // Малюємо ворога
+    e.y+=mgSpeed()*dt;
     mgCtx.beginPath();mgCtx.arc(e.x,e.y,e.r,0,Math.PI*2);mgCtx.fillStyle=e.color;mgCtx.fill();
     mgCtx.strokeStyle="#fff3";mgCtx.lineWidth=1;mgCtx.stroke();
-    // HP бар
     const bw=e.r*2,bh=5,bx=e.x-e.r,by=e.y+e.r+4;
     mgCtx.fillStyle="#333";mgCtx.fillRect(bx,by,bw,bh);
     mgCtx.fillStyle="#4f4";mgCtx.fillRect(bx,by,bw*(e.hp/e.maxHp),bh);
-    if(e.y-e.r>MG_H-10)lost=true;
+    if(e.y-e.r>H-10)lost=true;
   });
   if(lost){mgEndGame();return;}
-  // Час від попереднього спавну
-  mgCtx.fillStyle="#444";mgCtx.fillRect(0,0,MG_W,3);
-  mgCtx.fillStyle="#6af";mgCtx.fillRect(0,0,MG_W*(1-(mgSpawnTimer/mgSpawnInterval)),3);
+  mgCtx.fillStyle="#444";mgCtx.fillRect(0,0,W,3);
+  mgCtx.fillStyle="#6af";mgCtx.fillRect(0,0,W*(1-(mgSpawnTimer/mgSpawnInterval)),3);
 }
-
-let mgLast=0,mgSpawnTimer=0,mgSpawnInterval=3;
 function mgLoop(ts){
   if(!mgRunning)return;
   const dt=Math.min((ts-mgLast)/1000,0.1);mgLast=ts;
@@ -937,15 +1038,11 @@ function mgLoop(ts){
 
 function mgClickHit(cx,cy){
   if(!mgRunning)return;
-  const dmg=damage;
   for(let i=mgEnemies.length-1;i>=0;i--){
     const e=mgEnemies[i];
     if(Math.hypot(cx-e.x,cy-e.y)<=e.r){
-      e.hp-=dmg;
-      if(e.hp<=0){
-        mgRecord+=e.maxHp;mgKilled++;mgEnemies.splice(i,1);
-        mgRecordEl.textContent=mgRecord;mgCoinsEl.textContent=Math.floor(mgRecord/50)*100;
-      }
+      e.hp-=damage;
+      if(e.hp<=0)mgKillEnemy(e);
       break;
     }
   }
@@ -953,22 +1050,23 @@ function mgClickHit(cx,cy){
 
 function mgStartGame(){
   if(mgCDLeft>0)return;
-  mgRunning=true;mgEnemies=[];mgRecord=0;mgKilled=0;mgSpawnTimer=0;mgSpawnInterval=3;
-  mgStatus.textContent="";mgStartBtn.style.display="none";
+  mgRunning=true;mgEnemies=[];mgGhosts=[];mgRecord=0;mgKilled=0;mgSpawnTimer=0;mgSpawnInterval=3;mgFlashActive=false;
+  mgStatus.style.display="none";mgStartBtn.style.display="none";
   mgRecordEl.textContent=0;mgCoinsEl.textContent=0;mgDmgLabel.textContent=fmt(damage);
   mgLast=performance.now();
+  mgStartUpgrades();
   mgFrame=requestAnimationFrame(mgLoop);
 }
 
 function mgEndGame(){
-  mgRunning=false;cancelAnimationFrame(mgFrame);
+  mgRunning=false;cancelAnimationFrame(mgFrame);mgStopUpgrades();mgFlashActive=false;
   const earned=Math.floor(mgRecord/50)*100;
   addCoins(earned);update();
-  mgCtx.fillStyle="#000a";mgCtx.fillRect(0,0,MG_W,MG_H);
+  mgCtx.fillStyle="#000a";mgCtx.fillRect(0,0,mgW(),mgH());
   mgCtx.fillStyle="#fff";mgCtx.font="bold 22px Arial";mgCtx.textAlign="center";
-  mgCtx.fillText("💀 Провал!",MG_W/2,MG_H/2-20);
+  mgCtx.fillText("💀 Провал!",mgW()/2,mgH()/2-20);
   mgCtx.font="16px Arial";mgCtx.fillStyle="#f0e060";
-  mgCtx.fillText("Рекорд: "+mgRecord+" | +"+earned+" 🪙",MG_W/2,MG_H/2+15);
+  mgCtx.fillText("Рекорд: "+mgRecord+" | +"+earned+" 🪙",mgW()/2,mgH()/2+15);
   mgCDLeft=120;mgStartBtn.style.display="inline-block";mgStartBtn.disabled=true;
   mgStartBtn.textContent="⏳ "+mgCDLeft+"с";
   mgStatus.textContent="";
@@ -976,7 +1074,14 @@ function mgEndGame(){
   mgCDTimer=setInterval(()=>{mgCDLeft--;mgStartBtn.textContent=mgCDLeft>0?"⏳ "+mgCDLeft+"с":"▶ Старт";if(mgCDLeft<=0){mgStartBtn.disabled=false;clearInterval(mgCDTimer);}},1000);
 }
 
-function openMinigame(){mgOverlay.style.display="block";mgDmgLabel.textContent=fmt(damage);mgCtx.clearRect(0,0,MG_W,MG_H);}
+function openMinigame(){
+  mgOverlay.style.display="block";
+  mgDmgLabel.textContent=fmt(damage);
+  // Підлаштовуємо canvas під реальну ширину
+  const w=Math.min(mgCanvas.parentElement.clientWidth-24,400);
+  mgCanvas.width=w;mgCanvas.height=Math.round(w*0.75);
+  mgCtx.clearRect(0,0,mgCanvas.width,mgCanvas.height);
+}
 function closeMinigame(){if(mgRunning)mgEndGame();mgOverlay.style.display="none";}
 
 mgStartBtn.onclick=()=>{if(!mgStartBtn.disabled)mgStartGame();}
@@ -1108,7 +1213,8 @@ function showXPInfo(){
   const locked=[
     {level:2,name:{uk:"🔮 Заклинання",en:"🔮 Spells",ru:"🔮 Заклинания"}},
     {level:3,name:{uk:"🎁 Подарунки",en:"🎁 Gifts",ru:"🎁 Подарки"}},
-    {level:4,name:{uk:"💱 Обмін",en:"💱 Trade",ru:"💱 Обмен"}}
+    {level:4,name:{uk:"💱 Обмін",en:"💱 Trade",ru:"💱 Обмен"}},
+    {level:15,name:{uk:"🏆 Перемога",en:"🏆 Victory",ru:"🏆 Победа"}}
   ];
   const next=locked.filter(f=>f.level>xpLevel);
   const overlay=$("xpInfoOverlay");
@@ -1269,7 +1375,9 @@ function update(){
   $("gunPrice").textContent=gunPrice;$("gunDmg").textContent=fmt(gunDmg);buyGun.disabled=coins<gunPrice||stones<3;
   $("minerPrice").textContent=minerPrice;$("minerRate").textContent=fmt(minerRate);buyMiner.disabled=coins<minerPrice;
   $("goldPrice").textContent=goldPrice;$("goldRate").textContent=fmt(goldRate);buyGoldMiner.disabled=coins<goldPrice;
-  buyVictory.disabled=coins<100000000;
+  $("victoryItem").style.opacity=xpLevel>=15?"1":"0.4";
+  $("victoryLockLabel").style.display=xpLevel>=15?"none":"inline";
+  buyVictory.disabled=coins<100000000||xpLevel<15;
   // Стихії — оновлення кнопок
   updateElements();
   // Бейдж магазину
@@ -1591,7 +1699,7 @@ buyCannon.onclick=()=>{const p=discPrice(cannonPrice);if(coins<p)return;coins-=p
 giveHungerBtn.onclick=()=>{if(!adminUnlocked)return;hunger=Math.max(0,Math.min(100,Number($("setHunger").value)||0));updateHunger();adminMsg.textContent="Hunger: "+hunger+"%";}
 
 buyVictory.onclick=()=>{
-  if(coins<100000000)return;
+  if(coins<100000000||xpLevel<15)return;
   coins-=100000000;
   $("shopOverlay").style.display="none";
   if(!adminUsed||bugTestMode)showResult(true);
