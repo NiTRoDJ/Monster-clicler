@@ -1,4 +1,4 @@
-<!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>Monster Clicker 1.6.5</title><style>
+<!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>Monster Clicker 1.7.4</title><style>
 *{box-sizing:border-box}body{margin:0;background:#151515;color:#fff;font-family:Arial,sans-serif;text-align:center}
 #langScreen{position:fixed;inset:0;background:#151515;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
 #langScreen h2{font-size:26px;margin:0 0 10px}
@@ -117,12 +117,14 @@
 <div id="hptext">10 / 10 HP</div>
 <div style="display:flex;align-items:center;justify-content:center;gap:12px">
   <div style="display:flex;flex-direction:column;gap:8px;align-self:center">
+    <button id="potionBtn" style="border:0;border-radius:14px;padding:10px 14px;font-size:28px;background:#2a2a2a;cursor:pointer;border:2px solid #8844cc" title="Зілля">🍹</button>
     <button id="tradeBtn" style="border:0;border-radius:14px;padding:10px 14px;font-size:28px;background:#2a2a2a;cursor:pointer;border:2px solid #444" title="Обмін">💱</button>
     <button id="spellBtn" style="border:0;border-radius:14px;padding:10px 14px;font-size:28px;background:#2a2a2a;cursor:pointer;border:2px solid #444;position:relative" title="Заклинання">🔮</button>
     <button id="armyBtn" style="border:0;border-radius:14px;padding:10px 14px;font-size:28px;background:#2a2a2a;cursor:pointer;border:2px solid #5a3e00" title="Армія">🛡️</button>
   </div>
   <div id="monster" style="flex-shrink:0"><div id="spearcharge"><div id="spearchargebar"></div></div></div>
   <div style="display:flex;flex-direction:column;gap:8px;align-self:center">
+    <button id="saveBtn" style="border:0;border-radius:14px;padding:10px 14px;font-size:28px;background:#2a2a2a;cursor:pointer;border:2px solid #444" title="Збереження">📄</button>
     <button id="minigameBtn" style="border:0;border-radius:14px;padding:10px 14px;font-size:28px;background:#2a2a2a;cursor:pointer;border:2px solid #444" title="Міні-гра">🎮</button>
     <button id="giftBtn" style="border:0;border-radius:14px;padding:10px 14px;font-size:28px;background:#2a2a2a;cursor:pointer;border:2px solid #444" title="Подарунки">🎁</button>
     <button id="bossBtn" style="border:0;border-radius:14px;padding:10px 14px;font-size:28px;background:#2a2a2a;cursor:pointer;border:2px solid #8b0000" title="Боси">💀</button>
@@ -176,24 +178,32 @@
   <!-- Покращення -->
   <div class="shopSection" id="secUpgrades">
     <div class="shopItem">
-      <div class="info"><b>⚔️ Покращення меча</b><small>+damage | Ціна: <span id="buyPriceLabel">15</span> 🪙</small></div>
+      <div class="info"><b id="swordUpgLabel">⚔️ Покращення меча</b><small>+damage | Ціна: <span id="buyPriceLabel">15</span> 🪙</small></div>
       <button id="buyUpgrade">Купити</button>
     </div>
-    <div class="shopItem">
-      <div class="info"><b>🏹 Лучник</b><small>Урон: <span id="archerDmg">1</span>/уд, 1.3 уд/сек | Ціна: <span id="archerPrice">100</span> 🪙</small></div>
-      <button id="buyArcher">Купити</button>
+    <div class="shopItem" id="bladeItem">
+      <div class="info"><b>🗡️ Лезо меча</b><small>1% шанс доп. удару через 0.2с | Ціна: 150 🪙 (один раз)<br><small id="bladeLockLabel" style="color:#f80;display:none">🔒 Рівень 6</small></small></div>
+      <button id="buyBlade">150 🪙</button>
+    </div>
+    <div class="shopItem" id="bladeUpgItem">
+      <div class="info"><b>⚡ Покращення леза</b><small>Шанс: <span id="bladeChanceLbl">1</span>% | Ціна: <span id="bladeUpgPrice">500</span> 🪙<br><small id="bladeUpgLockLabel" style="color:#f80;display:none">🔒 Рівень 6</small></small></div>
+      <button id="buyBladeUpg">Купити</button>
     </div>
     <div class="shopItem">
-      <div class="info"><b>🔥 Вогнестрілька</b><small>Урон: <span id="gunDmg">2.7</span>/3.4с | Ціна: <span id="gunPrice">300</span> 🪙 + 3 ❤️</small></div>
-      <button id="buyGun">Купити</button>
+      <div class="info"><b id="archerLabel">🏹 Лучник</b><small>Урон: <span id="archerDmg">1</span>/уд, 1.3 уд/сек | Ціна: <span id="archerPrice">100</span> 🪙</small></div>
+      <button id="buyArcherBtn">Купити</button>
     </div>
     <div class="shopItem">
-      <div class="info"><b>⛏️ Шахтар</b><small><span id="minerRate">1</span> ❤️ / 15с | Ціна: <span id="minerPrice">1000</span> 🪙</small></div>
-      <button id="buyMiner">Купити</button>
+      <div class="info"><b id="gunLabel">🔥 Вогнестрілька</b><small>Урон: <span id="gunDmg">2.7</span>/3.4с | Ціна: <span id="gunPrice">300</span> 🪙 + 3 ❤️</small></div>
+      <button id="buyGunBtn">Купити</button>
     </div>
     <div class="shopItem">
-      <div class="info"><b>💰 Золотий майнер</b><small><span id="goldRate">15</span> 🪙 / сек | Ціна: <span id="goldPrice">2500</span> 🪙</small></div>
-      <button id="buyGoldMiner">Купити</button>
+      <div class="info"><b id="minerLabel">⛏️ Шахтар</b><small><span id="minerRate">1</span> ❤️ / 15с | Ціна: <span id="minerPrice">1000</span> 🪙</small></div>
+      <button id="buyMinerBtn">Купити</button>
+    </div>
+    <div class="shopItem">
+      <div class="info"><b id="goldMinerLabel">💰 Золотий майнер</b><small><span id="goldRate">15</span> 🪙 / сек | Ціна: <span id="goldPrice">2500</span> 🪙</small></div>
+      <button id="buyGoldMinerBtn">Купити</button>
     </div>
     <div class="shopItem" id="victoryItem" style="border-color:#ffd700">
       <div class="info"><b id="victoryItemName">🏆 Перемога</b><small id="victoryItemDesc">100,000,000 🪙</small><br><small id="victoryLockLabel" style="color:#f80;display:none">🔒 Рівень 15</small></div>
@@ -210,59 +220,67 @@
     <div id="elActiveLabel"></div>
     <div class="elItem" id="elFireItem">
       <div class="info">
-        <b>🔥 Вогонь</b>
-        <small>Після удару мечем — 20% шанс завдати ще ×1.15 damage</small>
+        <b id="elFireName">🔥 Вогонь</b>
+        <small id="elFireDesc">Після удару мечем — 20% шанс завдати ще ×1.15 damage</small>
         <span class="elStatus" id="elFireStatus"></span>
       </div>
       <button class="elBtn" id="elFireBtn">15000 🪙</button>
     </div>
     <div class="elItem" id="elIceItem">
       <div class="info">
-        <b>🧊 Лід</b>
-        <small>При ударі 30% шанс: отримати damage÷4 монет + нанести ×1.3 damage</small>
+        <b id="elIceName">🧊 Лід</b>
+        <small id="elIceDesc">При ударі 30% шанс: отримати damage÷4 монет + нанести ×1.3 damage</small>
         <span class="elStatus" id="elIceStatus"></span>
       </div>
       <button class="elBtn" id="elIceBtn">25000 🪙</button>
     </div>
     <div class="elItem" id="elPoisonItem">
       <div class="info">
-        <b>☠️ Отрута</b>
-        <small>При ударі 60% шанс нанести додатковий урон (damage÷4)</small>
+        <b id="elPoisonName">☠️ Отрута</b>
+        <small id="elPoisonDesc">При ударі 60% шанс нанести додатковий урон (damage÷4)</small>
         <span class="elStatus" id="elPoisonStatus"></span>
       </div>
       <button class="elBtn" id="elPoisonBtn">40000 🪙</button>
     </div>
     <div class="elItem" id="elLightItem">
       <div class="info">
-        <b>✨ Світло</b>
-        <small>При ударі 7% шанс отримати damage×1.5 монет</small>
+        <b id="elLightName">✨ Світло</b>
+        <small id="elLightDesc">При ударі 7% шанс отримати damage×1.5 монет</small>
         <span class="elStatus" id="elLightStatus"></span>
       </div>
       <button class="elBtn" id="elLightBtn">60000 🪙</button>
     </div>
     <div class="elItem" id="elDemonItem">
       <div class="info">
-        <b>😈 Демон</b>
-        <small>5% шанс: тричі нанести damage×3 з затримкою 0.24с</small>
+        <b id="elDemonName">😈 Демон</b>
+        <small id="elDemonDesc">5% шанс: тричі нанести damage×3 з затримкою 0.24с</small>
         <span class="elStatus" id="elDemonStatus"></span>
       </div>
       <button class="elBtn" id="elDemonBtn">100000 🪙</button>
     </div>
     <div class="elItem" id="elUltraItem">
       <div class="info">
-        <b>👑 Ультра Володар</b>
-        <small>15% отрута | 35% лід | 5% демон — при кожному ударі</small>
+        <b id="elUltraName">👑 Ультра Володар</b>
+        <small id="elUltraDesc">15% отрута | 35% лід | 5% демон — при кожному ударі</small>
         <span class="elStatus" id="elUltraStatus"></span>
       </div>
       <button class="elBtn" id="elUltraBtn">150000 🪙</button>
     </div>
     <div class="elItem" id="elSuperGodItem">
       <div class="info">
-        <b>🌟 Супер-бог</b>
-        <small>250000 🪙 + 50 💎 | Всі ефекти стихій одночасно</small>
+        <b id="elSuperGodName">🌟 Супер-бог</b>
+        <small id="elSuperGodDesc">250000 🪙 + 50 💎 | Всі ефекти стихій одночасно</small>
         <span class="elStatus" id="elSuperGodStatus"></span>
       </div>
       <button class="elBtn" id="elSuperGodBtn">250000 🪙</button>
+    </div>
+    <div class="elItem" id="elMegaLaserItem">
+      <div class="info">
+        <b id="elMegaLaserName">🔆 Мега-лазер</b>
+        <small id="elMegaLaserDesc">damage×1.3 + 1🪙 кожні 0.06с протягом 2с | Рівень 6</small>
+        <span class="elStatus" id="elMegaLaserStatus"></span>
+      </div>
+      <button class="elBtn" id="elMegaLaserBtn">50000 🪙</button>
     </div>
   </div>
   <!-- Їжа -->
@@ -332,6 +350,29 @@
   <div style="text-align:center;margin-top:6px">
     <button id="mgStartBtn" style="border:0;border-radius:10px;padding:10px 28px;background:#277cff;color:#fff;font-size:16px;font-weight:bold;cursor:pointer">▶ Старт</button>
   </div>
+</div>
+</div>
+
+<!-- Панель збереження -->
+<div id="saveOverlay" style="display:none;position:fixed;inset:0;background:#000a;z-index:100;overflow-y:auto">
+<div style="background:#1a1a1a;border:2px solid #555;border-radius:18px;max-width:360px;margin:60px auto;padding:20px;position:relative;text-align:center">
+  <button id="saveClose" style="position:absolute;top:12px;right:16px;background:none;border:0;color:#aaa;font-size:26px;cursor:pointer">✕</button>
+  <h2 style="margin:4px 0 18px">📄 Збереження</h2>
+  <button id="downloadSave" style="border:0;border-radius:12px;padding:13px 24px;background:#277cff;color:#fff;font-size:16px;font-weight:bold;cursor:pointer;width:100%;margin-bottom:10px">⬇️ Download JSON — Save Progress</button>
+  <label style="display:block;border:0;border-radius:12px;padding:13px 24px;background:#444;color:#fff;font-size:16px;font-weight:bold;cursor:pointer;width:100%;box-sizing:border-box">
+    ⬆️ Load JSON — Load Progress
+    <input type="file" id="loadSaveFile" accept=".json" style="display:none">
+  </label>
+  <div id="saveMsg" style="margin-top:12px;font-size:14px;color:#8f8;min-height:20px"></div>
+</div>
+</div>
+
+<!-- Панель зілля -->
+<div id="potionOverlay" style="display:none;position:fixed;inset:0;background:#000a;z-index:100;overflow-y:auto">
+<div style="background:#1a1a1a;border:2px solid #8844cc;border-radius:18px;max-width:380px;margin:30px auto;padding:18px;position:relative">
+  <button id="potionClose" style="position:absolute;top:12px;right:16px;background:none;border:0;color:#aaa;font-size:26px;cursor:pointer">✕</button>
+  <h2 style="margin:4px 0 14px">🍹 Зілля</h2>
+  <div id="potionList"></div>
 </div>
 </div>
 
@@ -437,7 +478,7 @@
 const T={
   uk:{title:"👹 Monster Clicker",clickInfo:"Клікай по монстру щоб атакувати! Затримай 1.2с для удару списом 🗡️",shop:"🛒 Магазин",items:"🎒 Предмети",upgrades:"⬆️ Покращення",elements:"🔮 Стихії",arrows5:"🏹 Стріли (×5)",arrowsDesc:"Урон: damage × 4.2 | Перезарядка: 10с",spear5:"🗡️ Спис (×5)",spearDesc:"Урон: damage × 1.4 | Затримай 1.2с для удару",bomb:"💣 Бомба",bombDesc:"Урон: damage × 1.7 | Миттєво",elemStone:"💎 Камінь стихії",elemStoneDesc:"Потрібен для Супер-бога",swordUpg:"⚔️ Покращення меча",swordDesc:"+damage | Ціна:",buy:"Купити",archer:"🏹 Лучник",archerDesc:"уд, 1.3 уд/сек | Ціна:",gun:"🔥 Вогнестрілька",gunDesc:"HP / 3.4с | Ціна:",miner:"⛏️ Шахтар",minerDesc:"❤️ / 15с | Ціна:",goldMiner:"💰 Золотий майнер",goldMinerDesc:"🪙 / сек | Ціна:",elOnlyOne:"Купуються раз і назавжди. Активна може бути лише одна.",activate:"Активувати",active:"✅ Активно",bought:"Куплено",nowActive:"Зараз активна",admin:"⚙️ Адмін",adminTitle:"🛠️ Адмін-панель",password:"Пароль",login:"Увійти",give:"Видати",setDmg:"Встановити Damage",spawn:"Заспавнити",shoot:"🏹 Стріляти",throwBomb:"💥 Кинути бомбу",reload:"⏳ Перезарядка:",spearReady:"🗡️ Готово до удару!",spearCD:"⏳ Спис:",lang:"🌍 Мова",
     elFireDesc:"20% шанс при ударі: +damage×1.15",elIceDesc:"30% шанс: +монети і ×1.3 damage",elPoisonDesc:"60% шанс: +damage÷4 урону",elLightDesc:"7% шанс: +damage×1.5 монет",elDemonDesc:"5% шанс: тричі damage×3 з затримкою 0.24с",elUltraDesc:"15% отрута | 35% лід | 5% демон",elSuperGodDesc:"Всі стихії одночасно",archerFullDesc:"1.3 уд/сек | Ціна:",gunFullDesc:"HP / 3.4с | Ціна:",minerFullDesc:"❤️ / 15с | Ціна:",goldMinerFullDesc:"🪙 / сек | Ціна:",
-    elFireName:"🔥 Вогонь",elIceName:"🧊 Лід",elPoisonName:"☠️ Отрута",elLightName:"✨ Світло",elDemonName:"😈 Демон",elUltraName:"👑 Ультра Володар",elSuperGodName:"🌟 Супер-бог",
+    elFireName:"🔥 Вогонь",elIceName:"🧊 Лід",elPoisonName:"☠️ Отрута",elLightName:"✨ Світло",elDemonName:"😈 Демон",elUltraName:"👑 Ультра Володар",elSuperGodName:"🌟 Супер-бог",elMegaLaserName:"🔆 Мега-лазер",elMegaLaserDesc:"damage×1.3 + 1🪙 кожні 0.06с | Рівень 6",
     victoryName:"🏆 Перемога",victoryDesc:"Фінальна ціль",
     spellPanel:"🔮 Заклинання",cast:"Кастувати",spellActive:"⚡ Активно",spellLocked:"Доступно з рівня 2",
     spellLightningName:"⚡ Блискавка бога",spellLightningDesc:"damage×20 урона | 3 спалахи",
@@ -463,7 +504,7 @@ const T={
     keepPlaying:"Грати далі",restart:"Все заново"},
   en:{title:"👹 Monster Clicker",clickInfo:"Click the monster to attack! Hold 1.2s for spear strike 🗡️",shop:"🛒 Shop",items:"🎒 Items",upgrades:"⬆️ Upgrades",elements:"🔮 Elements",arrows5:"🏹 Arrows (×5)",arrowsDesc:"Damage: damage × 4.2 | Reload: 10s",spear5:"🗡️ Spear (×5)",spearDesc:"Damage: damage × 1.4 | Hold 1.2s to strike",bomb:"💣 Bomb",bombDesc:"Damage: damage × 1.7 | Instant",elemStone:"💎 Element Stone",elemStoneDesc:"Required for Super-God",swordUpg:"⚔️ Sword Upgrade",swordDesc:"+damage | Price:",buy:"Buy",archer:"🏹 Archer",archerDesc:"dmg, 1.3 hits/s | Price:",gun:"🔥 Flamethrower",gunDesc:"HP / 3.4s | Price:",miner:"⛏️ Miner",minerDesc:"❤️ / 15s | Price:",goldMiner:"💰 Gold Miner",goldMinerDesc:"🪙 / sec | Price:",elOnlyOne:"Bought once, kept forever. Only one can be active.",activate:"Activate",active:"✅ Active",bought:"Bought",nowActive:"Currently active",admin:"⚙️ Admin",adminTitle:"🛠️ Admin Panel",password:"Password",login:"Login",give:"Give",setDmg:"Set Damage",spawn:"Spawn",shoot:"🏹 Shoot",throwBomb:"💥 Throw Bomb",reload:"⏳ Reload:",spearReady:"🗡️ Ready to strike!",spearCD:"⏳ Spear:",lang:"🌍 Language",
     elFireDesc:"20% chance on hit: +damage×1.15",elIceDesc:"30% chance: +coins and ×1.3 damage",elPoisonDesc:"60% chance: +damage÷4 bonus",elLightDesc:"7% chance: +damage×1.5 coins",elDemonDesc:"5% chance: damage×3 three times, 0.24s delay",elUltraDesc:"15% poison | 35% ice | 5% demon",elSuperGodDesc:"All elements at once",
-    elFireName:"🔥 Fire",elIceName:"🧊 Ice",elPoisonName:"☠️ Poison",elLightName:"✨ Light",elDemonName:"😈 Demon",elUltraName:"👑 Ultra Lord",elSuperGodName:"🌟 Super-God",
+    elFireName:"🔥 Fire",elIceName:"🧊 Ice",elPoisonName:"☠️ Poison",elLightName:"✨ Light",elDemonName:"😈 Demon",elUltraName:"👑 Ultra Lord",elSuperGodName:"🌟 Super-God",elMegaLaserName:"🔆 Mega-laser",elMegaLaserDesc:"damage×1.3 + 1🪙 per 0.06s | Level 6",
     victoryName:"🏆 Victory",victoryDesc:"The final goal",
     spellPanel:"🔮 Spells",cast:"Cast",spellActive:"⚡ Active",spellLocked:"Available from level 2",
     spellLightningName:"⚡ God's Lightning",spellLightningDesc:"damage×20 | 3 flashes",
@@ -489,7 +530,7 @@ const T={
     keepPlaying:"Keep playing",restart:"Restart"},
   ru:{title:"👹 Monster Clicker",clickInfo:"Кликай по монстру чтобы атаковать! Удержи 1.2с для удара копьём 🗡️",shop:"🛒 Магазин",items:"🎒 Предметы",upgrades:"⬆️ Улучшения",elements:"🔮 Стихии",arrows5:"🏹 Стрелы (×5)",arrowsDesc:"Урон: damage × 4.2 | Перезарядка: 10с",spear5:"🗡️ Копьё (×5)",spearDesc:"Урон: damage × 1.4 | Удержи 1.2с для удара",bomb:"💣 Бомба",bombDesc:"Урон: damage × 1.7 | Мгновенно",elemStone:"💎 Камень стихии",elemStoneDesc:"Нужен для Супер-бога",swordUpg:"⚔️ Улучшение меча",swordDesc:"+damage | Цена:",buy:"Купить",archer:"🏹 Лучник",archerDesc:"уд, 1.3 уд/сек | Цена:",gun:"🔥 Огнестрелка",gunDesc:"HP / 3.4с | Цена:",miner:"⛏️ Шахтёр",minerDesc:"❤️ / 15с | Цена:",goldMiner:"💰 Золотой шахтёр",goldMinerDesc:"🪙 / сек | Цена:",elOnlyOne:"Покупаются раз и навсегда. Активна может быть только одна.",activate:"Активировать",active:"✅ Активно",bought:"Куплено",nowActive:"Сейчас активна",admin:"⚙️ Админ",adminTitle:"🛠️ Админ-панель",password:"Пароль",login:"Войти",give:"Выдать",setDmg:"Установить Damage",spawn:"Заспавнить",shoot:"🏹 Стрелять",throwBomb:"💥 Бросить бомбу",reload:"⏳ Перезарядка:",spearReady:"🗡️ Готово к удару!",spearCD:"⏳ Копьё:",lang:"🌍 Язык",
     elFireDesc:"20% шанс при ударе: +damage×1.15",elIceDesc:"30% шанс: +монеты и ×1.3 урона",elPoisonDesc:"60% шанс: +damage÷4 урона",elLightDesc:"7% шанс: +damage×1.5 монет",elDemonDesc:"5% шанс: трижды damage×3, задержка 0.24с",elUltraDesc:"15% яд | 35% лёд | 5% демон",elSuperGodDesc:"Все стихии одновременно",
-    elFireName:"🔥 Огонь",elIceName:"🧊 Лёд",elPoisonName:"☠️ Яд",elLightName:"✨ Свет",elDemonName:"😈 Демон",elUltraName:"👑 Ультра Владыка",elSuperGodName:"🌟 Супер-бог",
+    elFireName:"🔥 Огонь",elIceName:"🧊 Лёд",elPoisonName:"☠️ Яд",elLightName:"✨ Свет",elDemonName:"😈 Демон",elUltraName:"👑 Ультра Владыка",elSuperGodName:"🌟 Супер-бог",elMegaLaserName:"🔆 Мега-лазер",elMegaLaserDesc:"damage×1.3 + 1🪙 кожні 0.06с | Рівень 6",
     victoryName:"🏆 Победа",victoryDesc:"Финальная цель",
     spellPanel:"🔮 Заклинания",cast:"Применить",spellActive:"⚡ Активно",spellLocked:"Доступно с уровня 2",
     spellLightningName:"⚡ Молния бога",spellLightningDesc:"damage×20 | 3 вспышки",
@@ -548,19 +589,21 @@ function applyLang(){
   document.querySelector("#secItems .shopItem:nth-child(4) b").textContent=t("elemStone");
   document.querySelector("#secItems .shopItem:nth-child(4) small").textContent=t("elemStoneDesc");
   // Магазин — покращення
-  document.querySelector("#secUpgrades .shopItem:nth-child(1) b").textContent=t("swordUpg");
-  document.querySelector("#secUpgrades .shopItem:nth-child(2) b").textContent=t("archer");
-  document.querySelector("#secUpgrades .shopItem:nth-child(3) b").textContent=t("gun");
-  document.querySelector("#secUpgrades .shopItem:nth-child(4) b").textContent=t("miner");
-  document.querySelector("#secUpgrades .shopItem:nth-child(5) b").textContent=t("goldMiner");
-  // Стихії — описи і назви
-  document.querySelector("#secElements>div:first-child").textContent=t("elOnlyOne");
-  const elNameKeys=["elFireName","elIceName","elPoisonName","elLightName","elDemonName","elUltraName","elSuperGodName"];
-  const elKeys=["elFireDesc","elIceDesc","elPoisonDesc","elLightDesc","elDemonDesc","elUltraDesc","elSuperGodDesc"];
-  document.querySelectorAll("#secElements .elItem").forEach((item,i)=>{
-    const b=item.querySelector("b");const s=item.querySelector("small");
-    if(b&&elNameKeys[i])b.textContent=t(elNameKeys[i]);
-    if(s&&elKeys[i])s.textContent=t(elKeys[i]);
+  $("swordUpgLabel").textContent=t("swordUpg");
+  $("archerLabel").textContent=t("archer");
+  $("gunLabel").textContent=t("gun");
+  $("minerLabel").textContent=t("miner");
+  $("goldMinerLabel").textContent=t("goldMiner");
+  // Стихії — описи і назви через id
+  [["elFireItem","elFireName","elFireDesc"],["elIceItem","elIceName","elIceDesc"],
+   ["elPoisonItem","elPoisonName","elPoisonDesc"],["elLightItem","elLightName","elLightDesc"],
+   ["elDemonItem","elDemonName","elDemonDesc"],["elUltraItem","elUltraName","elUltraDesc"],
+   ["elSuperGodItem","elSuperGodName","elSuperGodDesc"],["elMegaLaserItem","elMegaLaserName","elMegaLaserDesc"]
+  ].forEach(([itemId,nk,dk])=>{
+    const item=$(itemId);if(!item)return;
+    const b=item.querySelector("b"),s=item.querySelector("small");
+    if(b&&t(nk)!==nk)b.textContent=t(nk);
+    if(s&&t(dk)!==dk)s.textContent=t(dk);
   });
   // Перемога
   const vn=$("victoryItemName"),vd=$("victoryItemDesc");
@@ -583,8 +626,6 @@ function applyLang(){
   $("cannonShopName").textContent=t("cannon");
   $("foodPanelTitle").textContent=t("food");
   $("giveHungerBtn").textContent=t("setHunger");
-  // Кнопки купити
-  document.querySelectorAll(".shopItem button:not([id])").forEach(b=>b.textContent=t("buy"));
   // Адмін заголовок
   document.querySelector("#admin h2").textContent=t("adminTitle");
 }
@@ -618,7 +659,8 @@ let minerCount=0,minerPrice=1000,minerRate=1,minerTimer=null;
 let goldMinerCount=0,goldPrice=2500,goldRate=15,goldTimer=null;
 let spearReady=true,spearCooldownLeft=0,spearCooldownTimer=null;
 // Стихії: owned = куплено, active = яка зараз активна (null або 'fire')
-let elOwned={fire:false,ice:false,poison:false,light:false,demon:false,ultra:false,supergod:false},elActive=null;
+let elOwned={fire:false,ice:false,poison:false,light:false,demon:false,ultra:false,supergod:false,megalaser:false},elActive=null;
+let bladeOwned=false,bladeChance=0.01,bladeUpgPrice=500;
 let holdStart=null,holdAnim=null,holding=false,adminUnlocked=false,adminUsed=false,bugTestMode=false;
 
 const $=id=>document.getElementById(id);
@@ -627,7 +669,7 @@ const hpBar=$("hpbar"),hpText=$("hptext"),nameEl=$("name");
 const monster=$("monster"),shoot=$("shoot"),cooldownEl=$("cooldown"),spearcooldownEl=$("spearcooldown");
 const useBomb=$("useBomb");
 const buy=$("buyUpgrade"),buyArrows=$("buyArrows"),buySpear=$("buySpear"),buyBomb=$("buyBomb");
-const buyArcher=$("buyArcher"),buyGun=$("buyGun"),buyMiner=$("buyMiner"),buyGoldMiner=$("buyGoldMiner"),buyVictory=$("buyVictory");
+const buyArcher=$("buyArcherBtn"),buyGun=$("buyGunBtn"),buyMiner=$("buyMinerBtn"),buyGoldMiner=$("buyGoldMinerBtn"),buyVictory=$("buyVictory");
 const shopBtn=$("shopBtn"),shopOverlay=$("shopOverlay"),shopClose=$("shopClose"),shopBadge=$("shopBadge");
 const tabItems=$("tabItems"),tabUpgrades=$("tabUpgrades"),tabElements=$("tabElements"),tabFood=$("tabFood"),tabMgShop=$("tabMgShop");
 const secItems=$("secItems"),secUpgrades=$("secUpgrades"),secElements=$("secElements"),secFood=$("secFood"),secMgShop=$("secMgShop");
@@ -635,6 +677,8 @@ const foodBtn=$("foodBtn"),foodOverlay=$("foodOverlay"),foodClose=$("foodClose")
 const bossBtn=$("bossBtn"),bossOverlay=$("bossOverlay"),bossClose=$("bossClose"),bossList=$("bossList");
 const giftBtn=$("giftBtn"),giftOverlay=$("giftOverlay"),giftClose=$("giftClose"),giftList=$("giftList");
 const tradeBtn=$("tradeBtn"),tradeOverlay=$("tradeOverlay"),tradeClose=$("tradeClose"),tradeList=$("tradeList");
+const potionBtn=$("potionBtn"),potionOverlay=$("potionOverlay"),potionClose=$("potionClose"),potionList=$("potionList");
+const saveBtn=$("saveBtn"),saveOverlay=$("saveOverlay"),saveClose=$("saveClose"),saveMsg=$("saveMsg");
 const minigameBtn=$("minigameBtn"),mgOverlay=$("mgOverlay"),mgClose=$("mgClose");
 const mgCanvas=$("mgCanvas"),mgCtx=mgCanvas.getContext("2d");
 const mgStartBtn=$("mgStartBtn"),mgStatus=$("mgStatus"),mgRecordEl=$("mgRecord"),mgCoinsEl=$("mgCoins"),mgDmgLabel=$("mgDmgLabel");
@@ -645,6 +689,12 @@ const MG_MAX_ACTIVE=3;
 let mgUpgrades={defender:{owned:false,active:false},electric:{owned:false,active:false},pistols:{owned:false,active:false},rocket:{owned:false,active:false},cannon2:{owned:false,active:false}};
 let mgDefTimer=null,mgElecTimer=null,mgPistTimer=null,mgRocketTimer=null,mgCannon2Timer=null;
 let mgFlashActive=false;
+// Зілля
+let potionInv={strength:0,rage:0,fullness:0,jack:0};
+let potionCDs={strength:0,rage:0,fullness:0,jack:0};
+let potionCDTimers={strength:null,rage:null,fullness:null,jack:null};
+let potionActiveEffects={};
+let jackHungerTimer=null,jackXPTimer=null;
 const spellBtn=$("spellBtn"),spellOverlay=$("spellOverlay"),spellClose=$("spellClose"),spellList=$("spellList");
 const armyBtn=$("armyBtn"),armyOverlay=$("armyOverlay"),armyClose=$("armyClose"),armyList=$("armyList");
 const buyApple=$("buyApple"),buyMeat=$("buyMeat"),buyPizza=$("buyPizza"),buyBanana=$("buyBanana"),buyWeirdFruit=$("buyWeirdFruit"),buyWatermelon=$("buyWatermelon"),buyToxic=$("buyToxic"),buyPineapple=$("buyPineapple"),giveHungerBtn=$("giveHungerBtn");
@@ -656,6 +706,8 @@ const elLightBtn=$("elLightBtn"),elLightItem=$("elLightItem"),elLightStatus=$("e
 const elDemonBtn=$("elDemonBtn"),elDemonItem=$("elDemonItem"),elDemonStatus=$("elDemonStatus");
 const elUltraBtn=$("elUltraBtn"),elUltraItem=$("elUltraItem"),elUltraStatus=$("elUltraStatus");
 const elSuperGodBtn=$("elSuperGodBtn"),elSuperGodItem=$("elSuperGodItem"),elSuperGodStatus=$("elSuperGodStatus");
+const elMegaLaserBtn=$("elMegaLaserBtn"),elMegaLaserItem=$("elMegaLaserItem"),elMegaLaserStatus=$("elMegaLaserStatus");
+const buyBlade=$("buyBlade"),buyBladeUpg=$("buyBladeUpg"),bladeItem=$("bladeItem"),bladeUpgItem=$("bladeUpgItem");
 const buyElemStone=$("buyElemStone");
 const adminOpen=$("adminOpen"),admin=$("admin"),adminLogin=$("adminLoginBtn"),adminPass=$("adminPass"),adminControls=$("adminControls");
 const giveAmount=$("giveAmount"),giveType=$("giveType"),give=$("giveBtn"),setDamage=$("setDamage"),giveDamage=$("giveDamageBtn"),spawnType=$("spawnType"),spawnAdmin=$("spawnAdmin"),adminMsg=$("adminMsg");
@@ -672,7 +724,7 @@ function switchTab(active){
   active.tab.classList.add("active");active.sec.classList.add("active");
 }
 tabItems.onclick=()=>switchTab({tab:tabItems,sec:secItems});
-tabUpgrades.onclick=()=>switchTab({tab:tabUpgrades,sec:secUpgrades});
+tabUpgrades.onclick=()=>{switchTab({tab:tabUpgrades,sec:secUpgrades});update();};
 tabElements.onclick=()=>switchTab({tab:tabElements,sec:secElements});
 tabFood.onclick=()=>switchTab({tab:tabFood,sec:secFood});
 tabMgShop.onclick=()=>{switchTab({tab:tabMgShop,sec:secMgShop});renderMgShop();};
@@ -692,6 +744,12 @@ armyOverlay.onclick=e=>{if(e.target===armyOverlay)armyOverlay.style.display="non
 giftBtn.onclick=()=>{if(xpLevel<3)return;renderGiftPanel();giftOverlay.style.display="block";}
 giftClose.onclick=()=>giftOverlay.style.display="none";
 giftOverlay.onclick=e=>{if(e.target===giftOverlay)giftOverlay.style.display="none";};
+saveBtn.onclick=()=>{saveMsg.textContent="";saveOverlay.style.display="block";}
+saveClose.onclick=()=>saveOverlay.style.display="none";
+saveOverlay.onclick=e=>{if(e.target===saveOverlay)saveOverlay.style.display="none";};
+potionBtn.onclick=()=>{renderPotionPanel();potionOverlay.style.display="block";}
+potionClose.onclick=()=>potionOverlay.style.display="none";
+potionOverlay.onclick=e=>{if(e.target===potionOverlay)potionOverlay.style.display="none";};
 tradeBtn.onclick=()=>{if(xpLevel<4)return;renderTradePanel();tradeOverlay.style.display="block";}
 tradeClose.onclick=()=>tradeOverlay.style.display="none";
 tradeOverlay.onclick=e=>{if(e.target===tradeOverlay)tradeOverlay.style.display="none";};
@@ -1090,6 +1148,158 @@ mgCanvas.addEventListener("touchstart",e=>{e.preventDefault();const r=mgCanvas.g
 
 // ===== КІНЕЦЬ МІНІ-ГРИ =====
 
+function drinkPotion(key){
+  if(potionInv[key]<=0||potionCDs[key]>0)return;
+  potionInv[key]--;
+  const def={
+    strength:{hunger:5,xp:50,cd:30,effect:()=>{const b=damage;damage*=2.5;setTimeout(()=>{damage=b;update();},10000);}},
+    rage:{hunger:12,xp:120,cd:60,effect:()=>{const b=damage,prevReady=shootReady;damage*=5.6;const oldShoot=shoot.onclick;shootReady=true;shoot.disabled=false;const t=setTimeout(()=>{damage=b;shootReady=prevReady;update();},10000);potionActiveEffects.rage=t;}},
+    fullness:{hunger:100,xp:200,cd:300,effect:null},
+    jack:{hunger:30,xp:500,cd:300,effect:()=>{
+      if(jackHungerTimer)clearInterval(jackHungerTimer);
+      if(jackXPTimer)clearInterval(jackXPTimer);
+      jackHungerTimer=setInterval(()=>{hunger=Math.min(100,hunger+1);updateHunger();},1000);
+      jackXPTimer=setInterval(()=>{gainXP(1);},200);
+      setTimeout(()=>{clearInterval(jackHungerTimer);clearInterval(jackXPTimer);},40000);
+    }}
+  };
+  const d=def[key];
+  hunger=Math.min(100,hunger+d.hunger);updateHunger();
+  gainXP(d.xp);
+  if(d.effect)d.effect();
+  update();
+  // Перезарядка
+  potionCDs[key]=d.cd;
+  if(potionCDTimers[key])clearInterval(potionCDTimers[key]);
+  potionCDTimers[key]=setInterval(()=>{potionCDs[key]--;if(potionCDs[key]<=0){clearInterval(potionCDTimers[key]);potionCDTimers[key]=null;}renderPotionPanel();},1000);
+  renderPotionPanel();
+}
+
+function renderPotionPanel(){
+  potionList.innerHTML="";
+  const potions=[
+    {key:"strength",emoji:"💪",name:"Зілля сили",      desc:"+5% голоду | ×2.5 damage 10с | 30с КД",   price:500},
+    {key:"rage",    emoji:"😡",name:"Зілля скаженості", desc:"+12% голоду | ×5.6 dmg + стріли без КД 10с | 60с КД",price:1700},
+    {key:"fullness",emoji:"🌕",name:"Зілля повної ситості",desc:"+100% голоду | 300с КД",               price:1500},
+    {key:"jack",    emoji:"🌀",name:"Зілля Джека",      desc:"+30% голоду | +1% голоду/с + 1XP/0.2с на 40с | 300с КД",price:5000}
+  ];
+  potions.forEach(p=>{
+    const count=potionInv[p.key],cd=potionCDs[p.key];
+    const canDrink=count>0&&cd<=0;
+    const row=document.createElement("div");
+    row.style.cssText=`background:#242424;border:2px solid ${canDrink?"#8844cc":"#444"};border-radius:12px;padding:10px 14px;margin:8px 0;display:flex;align-items:center;justify-content:space-between;gap:10px`;
+    const info=document.createElement("div");
+    info.style.flex="1";
+    const cdTxt=cd>0?` <span style="color:#f80">⏳${cd}с</span>`:"";
+    info.innerHTML=`<b style="font-size:15px">${p.emoji} ${p.name}</b> <span style="color:#aaa;font-size:13px">x${count}</span>${cdTxt}<br><small style="color:#aaa">${p.desc}</small><br><small style="color:#c8a020">${p.price} 🪙</small>`;
+    const wrap=document.createElement("div");
+    wrap.style.cssText="display:flex;flex-direction:column;gap:4px";
+    const btnBuy=document.createElement("button");
+    btnBuy.textContent="Купити";btnBuy.disabled=coins<p.price;
+    btnBuy.style.cssText="border:0;border-radius:8px;padding:6px 10px;background:#277cff;color:#fff;font-size:13px;font-weight:bold;cursor:pointer";
+    btnBuy.onclick=()=>{if(coins<p.price)return;coins-=p.price;potionInv[p.key]++;update();renderPotionPanel();};
+    const btnDrink=document.createElement("button");
+    btnDrink.textContent=cd>0?"⏳":"Випити";btnDrink.disabled=!canDrink;
+    btnDrink.style.cssText=`border:0;border-radius:8px;padding:6px 10px;background:${canDrink?"#8844cc":"#555"};color:#fff;font-size:13px;font-weight:bold;cursor:${canDrink?"pointer":"default"}`;
+    btnDrink.onclick=()=>drinkPotion(p.key);
+    wrap.appendChild(btnBuy);wrap.appendChild(btnDrink);
+    row.appendChild(info);row.appendChild(wrap);potionList.appendChild(row);
+  });
+}
+
+function getSaveData(){
+  return {
+    // Валюти
+    coins,arrows,stones,spears,bombs,elemStones,
+    // Стан гравця
+    damage,purchase,price,
+    xp,xpLevel,xpMax,
+    hunger,
+    // Покупки — автоматики
+    archerCount,archerPrice,archerDmg,
+    gunCount,gunPrice,gunDmg,
+    minerCount,minerPrice,minerRate,
+    goldMinerCount,goldPrice,goldRate,
+    knightCount,knightPrice,knightDmg,knightInterval,
+    generalCount,generalPrice,generalInterval,
+    xpSellerCount,xpSellerPrice,xpSellerRate,
+    cannonCount,cannonPrice,cannonInterval,
+    // Лезо
+    bladeOwned,bladeChance,bladeUpgPrice,
+    // Стихії
+    elOwned,elActive,
+    // Зілля інвентар
+    potionInv,
+    // Їжа інвентар
+    foodInv,
+    // Апгрейди міні-гри
+    mgUpgrades,
+    // Монстер
+    monsterType,hp,maxHp,
+    // Армія
+    archerDmg,
+  };
+}
+
+function loadSaveData(d){
+  try{
+    coins=d.coins||0;arrows=d.arrows||0;stones=d.stones||0;
+    spears=d.spears||0;bombs=d.bombs||0;elemStones=d.elemStones||0;
+    damage=d.damage||1;purchase=d.purchase||0;price=d.price||15;
+    xp=d.xp||0;xpLevel=d.xpLevel||1;xpMax=d.xpMax||1000;
+    hunger=d.hunger??100;
+    archerCount=d.archerCount||0;archerPrice=d.archerPrice||100;archerDmg=d.archerDmg||1;
+    gunCount=d.gunCount||0;gunPrice=d.gunPrice||300;gunDmg=d.gunDmg||2.7;
+    minerCount=d.minerCount||0;minerPrice=d.minerPrice||1000;minerRate=d.minerRate||1;
+    goldMinerCount=d.goldMinerCount||0;goldPrice=d.goldPrice||2500;goldRate=d.goldRate||15;
+    knightCount=d.knightCount||0;knightPrice=d.knightPrice||5000;knightDmg=d.knightDmg||11;knightInterval=d.knightInterval||5.7;
+    generalCount=d.generalCount||0;generalPrice=d.generalPrice||25000;generalInterval=d.generalInterval||30;
+    xpSellerCount=d.xpSellerCount||0;xpSellerPrice=d.xpSellerPrice||2000;xpSellerRate=d.xpSellerRate||3;
+    cannonCount=d.cannonCount||0;cannonPrice=d.cannonPrice||5000;cannonInterval=d.cannonInterval||20;
+    bladeOwned=d.bladeOwned||false;bladeChance=d.bladeChance||0.01;bladeUpgPrice=d.bladeUpgPrice||500;
+    if(d.elOwned)Object.assign(elOwned,d.elOwned);
+    elActive=d.elActive||null;
+    if(d.potionInv)Object.assign(potionInv,d.potionInv);
+    if(d.foodInv)Object.assign(foodInv,d.foodInv);
+    if(d.mgUpgrades)Object.keys(d.mgUpgrades).forEach(k=>{if(mgUpgrades[k])Object.assign(mgUpgrades[k],d.mgUpgrades[k]);});
+    // Відновлюємо монстра
+    if(d.monsterType){
+      monsterType=d.monsterType;maxHp=d.maxHp||10;hp=d.hp||maxHp;
+      nameEl.textContent={zombie:"Зомбі",skeleton:"Скелет",slime:"Слайм",knight:"Зомбі-лицар",wither:"Візер-скелет",blaze:"Блейз",eblaze:"Електричний блейз",giant:"Зомбі-великан",dragon:"Дракон",ftitan:"Вогняний Титан",stoneTitan:"Кам'яний Титан"}[monsterType]||"Зомбі";
+      restoreColor();
+    }
+    // Відновлюємо таймери автоматики
+    if(archerCount>0&&!archerTimer)archerTimer=setInterval(()=>{if(hp>0&&archerCount)hit(archerDmg*archerCount)},1000/1.3);
+    if(gunCount>0&&!gunTimer)gunTimer=setInterval(()=>{if(hp>0&&gunCount){hp-=gunDmg*gunCount;setColor("#f33","#f00");fire.style.display="block";setTimeout(()=>{fire.style.display="none";restoreColor()},400);if(hp<=0)kill();update()}},3400);
+    if(minerCount>0&&!minerTimer)minerTimer=setInterval(()=>{stones+=minerRate;update()},15000);
+    if(goldMinerCount>0&&!goldTimer)goldTimer=setInterval(()=>{coins+=goldRate*coinMult*(bananaCoinDebuff?0.98:1);update();},1000);
+    if(knightCount>0&&!knightTimer)knightTimer=setInterval(()=>{if(hp>0&&knightCount)hit(knightDmg*knightCount);},knightInterval*1000);
+    if(xpSellerCount>0&&!xpSellerTimer)xpSellerTimer=setInterval(()=>{gainXP(xpSellerRate*xpSellerCount);},1000);
+    if(cannonCount>0){cannonTimer=setInterval(()=>{if(hp>0&&cannonCount)hit(cannonDmg*cannonCount);},cannonInterval*1000);}
+    updateFoodBadge();update();updateXP();updateSpellBtn();updateGiftBtn();updateTradeBtn();updateHunger();
+    saveMsg.style.color="#8f8";saveMsg.textContent="✅ Завантажено!";
+  }catch(e){saveMsg.style.color="#e05555";saveMsg.textContent="❌ Помилка: "+e.message;}
+}
+
+$("downloadSave").onclick=()=>{
+  const data=JSON.stringify(getSaveData(),null,2);
+  const blob=new Blob([data],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download="monster-clicker-save.json";a.click();
+  saveMsg.style.color="#8f8";saveMsg.textContent="✅ Збережено!";
+};
+
+$("loadSaveFile").onchange=e=>{
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{const d=JSON.parse(ev.target.result);loadSaveData(d);}
+    catch{saveMsg.style.color="#e05555";saveMsg.textContent="❌ Невірний файл!";}
+  };
+  reader.readAsText(file);
+  e.target.value="";
+};
+
 function updateTradeBtn(){
   tradeBtn.style.opacity=xpLevel>=4?"1":"0.4";
   tradeBtn.style.borderColor=xpLevel>=4?"#00bcd4":"#444";
@@ -1214,6 +1424,7 @@ function showXPInfo(){
     {level:2,name:{uk:"🔮 Заклинання",en:"🔮 Spells",ru:"🔮 Заклинания"}},
     {level:3,name:{uk:"🎁 Подарунки",en:"🎁 Gifts",ru:"🎁 Подарки"}},
     {level:4,name:{uk:"💱 Обмін",en:"💱 Trade",ru:"💱 Обмен"}},
+    {level:6,name:{uk:"🔆 Мега-лазер + 🗡️ Лезо",en:"🔆 Mega-laser + 🗡️ Blade",ru:"🔆 Мега-лазер + 🗡️ Лезвие"}},
     {level:15,name:{uk:"🏆 Перемога",en:"🏆 Victory",ru:"🏆 Победа"}}
   ];
   const next=locked.filter(f=>f.level>xpLevel);
@@ -1378,6 +1589,16 @@ function update(){
   $("victoryItem").style.opacity=xpLevel>=15?"1":"0.4";
   $("victoryLockLabel").style.display=xpLevel>=15?"none":"inline";
   buyVictory.disabled=coins<100000000||xpLevel<15;
+  // Лезо меча — рівень 6
+  bladeItem.style.opacity=xpLevel>=6?"1":"0.4";
+  $("bladeLockLabel").style.display=xpLevel>=6?"none":"inline";
+  buyBlade.disabled=bladeOwned||coins<150||xpLevel<6;
+  buyBlade.textContent=bladeOwned?"✅ Куплено":"150 🪙";
+  bladeUpgItem.style.opacity=(xpLevel>=6&&bladeOwned)?"1":"0.4";
+  $("bladeUpgLockLabel").style.display=xpLevel>=6?"none":"inline";
+  $("bladeChanceLbl").textContent=Math.min(80,Math.round(bladeChance*100));
+  $("bladeUpgPrice").textContent=Math.ceil(bladeUpgPrice);
+  buyBladeUpg.disabled=!bladeOwned||coins<bladeUpgPrice||bladeChance>=0.8||xpLevel<6;
   // Стихії — оновлення кнопок
   updateElements();
   // Бейдж магазину
@@ -1450,6 +1671,23 @@ function updateElements(){
     elSuperGodBtn.textContent="Активувати";elSuperGodBtn.disabled=false;
     elSuperGodBtn.className="elBtn activate";elSuperGodBtn.style.background="";
     elSuperGodStatus.textContent="Куплено";elSuperGodStatus.style.color="#8f8";
+  }
+  // Мега-лазер — рівень 6
+  const isMegaLaserActive=elActive==="megalaser";
+  elMegaLaserItem.style.opacity=xpLevel>=6?"1":"0.4";
+  elMegaLaserItem.className="elItem"+(elOwned.megalaser?" owned":"")+(isMegaLaserActive?" active-el":"");
+  if(!elOwned.megalaser){
+    elMegaLaserBtn.textContent=xpLevel>=6?"50000 🪙":"🔒 Рівень 6";
+    elMegaLaserBtn.disabled=coins<50000||xpLevel<6;
+    elMegaLaserBtn.className="elBtn";elMegaLaserStatus.textContent="";
+  } else if(isMegaLaserActive){
+    elMegaLaserBtn.textContent="✅ Активно";elMegaLaserBtn.disabled=true;
+    elMegaLaserBtn.className="elBtn active-btn";elMegaLaserBtn.style.background="#00aa88";
+    elMegaLaserStatus.textContent="🔆 Активно";elMegaLaserStatus.style.color="#00ffaa";
+  } else {
+    elMegaLaserBtn.textContent="Активувати";elMegaLaserBtn.disabled=false;
+    elMegaLaserBtn.className="elBtn activate";elMegaLaserBtn.style.background="";
+    elMegaLaserStatus.textContent="Куплено";elMegaLaserStatus.style.color="#8f8";
   }
 }
 
@@ -1536,6 +1774,21 @@ function laserStrike(){
   },60);
 }
 
+function megaLaserStrike(){
+  const emoji=document.createElement("span");
+  emoji.textContent="🔆";
+  emoji.style.cssText="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:80px;z-index:4;pointer-events:none";
+  monster.appendChild(emoji);
+  let ticks=0,total=Math.floor(2000/60);
+  const interval=setInterval(()=>{
+    flashMonster("#00ffaa");
+    hp-=damage*1.3;addCoins(1);
+    if(hp<=0){kill();update();clearInterval(interval);if(monster.contains(emoji))monster.removeChild(emoji);return;}
+    update();ticks++;
+    if(ticks>=total){clearInterval(interval);if(monster.contains(emoji))monster.removeChild(emoji);}
+  },60);
+}
+
 function applyElementalSword(baseDmg){
   let d=baseDmg,active=elActive;
   const dmgMult=superPowerActive?2.2:1;
@@ -1563,12 +1816,14 @@ function applyElementalSword(baseDmg){
   else if(active==="poison"&&Math.random()<.60){d+=damage/4;flashMonster("#2d8b00");}
   else if(active==="light"&&Math.random()<.07){coins+=Math.floor(damage*1.5);flashMonster("#ffff99");}
   else if(active==="demon"&&Math.random()<.05){setTimeout(demonStrike,100);}
+  else if(active==="megalaser"){setTimeout(megaLaserStrike,100);}
   return d*dmgMult;
 }
 function hit(x){
   if(hasArmor&&Math.random()<0.05){update();return;} // MISS
   hp-=x;
   if(flasherActive){setTimeout(()=>{if(hp>0){flashMonster("#ffff99");hp-=damage*1.3;if(hp<=0)kill();update();}},500);}
+  if(bladeOwned&&Math.random()<bladeChance){setTimeout(()=>{if(hp>0){hp-=damage;if(hp<=0)kill();update();}},200);}
   if(hp<=0)kill();
   hungerHit();update();
 }
@@ -1650,6 +1905,10 @@ elUltraBtn.onclick=()=>{
   if(!elOwned.ultra){if(coins<150000)return;coins-=150000;elOwned.ultra=true;}
   elActive="ultra";update();
 }
+buyBlade.onclick=()=>{if(bladeOwned||coins<150||xpLevel<6)return;coins-=150;bladeOwned=true;gainXP(5);update();}
+buyBladeUpg.onclick=()=>{if(!bladeOwned||coins<bladeUpgPrice||bladeChance>=0.8||xpLevel<6)return;coins-=Math.ceil(bladeUpgPrice);bladeChance=Math.min(0.8,bladeChance*1.2);bladeUpgPrice*=1.05;gainXP(10);update();}
+elMegaLaserBtn.onclick=()=>{if(!elOwned.megalaser){if(coins<50000||xpLevel<6)return;coins-=50000;elOwned.megalaser=true;}elActive="megalaser";update();}
+
 elSuperGodBtn.onclick=()=>{
   if(!elOwned.supergod){if(coins<250000||elemStones<50)return;coins-=250000;elemStones-=50;elOwned.supergod=true;}
   elActive="supergod";update();
