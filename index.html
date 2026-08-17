@@ -1,4 +1,4 @@
-<!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>Monster Clicker 1.9.2</title><style>
+<!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>Monster Clicker 1.9.3</title><style>
 *{box-sizing:border-box}body{margin:0;background:#151515;color:#fff;font-family:Arial,sans-serif;text-align:center}
 #langScreen{position:fixed;inset:0;background:#151515;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
 #langScreen h2{font-size:26px;margin:0 0 10px}
@@ -142,6 +142,7 @@
 <div id="cooldown"></div><div id="spearcooldown"></div>
 <br>
 <button id="shopBtn">🛒 Магазин<span id="shopBadge"></span></button>
+<button id="creditsBtn" style="border:0;border-radius:12px;padding:13px 20px;margin:5px;background:#222;color:#aaa;font-size:16px;font-weight:bold;cursor:pointer;border:1px solid #444">???</button>
 <button id="adminOpen">⚙️ Адмін</button>
 
 <!-- Магазин -->
@@ -364,6 +365,21 @@
     <input type="file" id="loadSaveFile" accept=".json" style="display:none">
   </label>
   <div id="saveMsg" style="margin-top:12px;font-size:14px;color:#8f8;min-height:20px"></div>
+</div>
+</div>
+
+<!-- Credits -->
+<div id="creditsOverlay" style="display:none;position:fixed;inset:0;background:#000a;z-index:100;display:none;align-items:center;justify-content:center">
+<div style="background:#1a1a1a;border:2px solid #444;border-radius:18px;max-width:340px;width:90%;padding:28px;position:relative;text-align:center">
+  <button id="creditsClose" style="position:absolute;top:12px;right:16px;background:none;border:0;color:#aaa;font-size:26px;cursor:pointer">✕</button>
+  <div style="font-size:32px;margin-bottom:10px">🎮</div>
+  <h2 style="margin:0 0 18px;font-size:20px">Monster Clicker</h2>
+  <div style="color:#aaa;font-size:15px;line-height:1.8">
+    <div>Made by <b style="color:#fff">@ADOKAB7</b></div>
+    <div>Playtester: <b style="color:#fff">@ihectorg12x</b></div>
+    <br>
+    <div style="color:#888;font-size:14px">Thanks everyone for playing 💙</div>
+  </div>
 </div>
 </div>
 
@@ -679,6 +695,10 @@ const giftBtn=$("giftBtn"),giftOverlay=$("giftOverlay"),giftClose=$("giftClose")
 const tradeBtn=$("tradeBtn"),tradeOverlay=$("tradeOverlay"),tradeClose=$("tradeClose"),tradeList=$("tradeList");
 const potionBtn=$("potionBtn"),potionOverlay=$("potionOverlay"),potionClose=$("potionClose"),potionList=$("potionList");
 const saveBtn=$("saveBtn"),saveOverlay=$("saveOverlay"),saveClose=$("saveClose"),saveMsg=$("saveMsg");
+const creditsBtn=$("creditsBtn"),creditsOverlay=$("creditsOverlay"),creditsClose=$("creditsClose");
+creditsBtn.onclick=()=>{creditsOverlay.style.display="flex";}
+creditsClose.onclick=()=>creditsOverlay.style.display="none";
+creditsOverlay.onclick=e=>{if(e.target===creditsOverlay)creditsOverlay.style.display="none";};
 const minigameBtn=$("minigameBtn"),mgOverlay=$("mgOverlay"),mgClose=$("mgClose");
 const mgCanvas=$("mgCanvas"),mgCtx=mgCanvas.getContext("2d");
 const mgStartBtn=$("mgStartBtn"),mgStatus=$("mgStatus"),mgRecordEl=$("mgRecord"),mgCoinsEl=$("mgCoins"),mgDmgLabel=$("mgDmgLabel");
