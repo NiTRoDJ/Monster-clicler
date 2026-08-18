@@ -1,4 +1,4 @@
-<!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>Monster Clicker 1.9.3</title><style>
+<!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>Monster Clicker 1.10</title><style>
 *{box-sizing:border-box}body{margin:0;background:#151515;color:#fff;font-family:Arial,sans-serif;text-align:center}
 #langScreen{position:fixed;inset:0;background:#151515;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
 #langScreen h2{font-size:26px;margin:0 0 10px}
@@ -110,7 +110,7 @@
   </div>
 </div>
 <h1>👹 Monster Clicker</h1>
-<div id="stats">🪙 <b id="coins">0</b> &nbsp;🏹 <b id="arrows">0</b> &nbsp;❤️ <b id="stones">0</b><br>🗡️ <b id="spears">0</b> &nbsp;💣 <b id="bombs">0</b> &nbsp;💎 <b id="elemStones">0</b></div>
+<div id="stats">🪙 <b id="coins">0</b> &nbsp;🏹 <b id="arrows">0</b> &nbsp;❤️ <b id="stones">0</b><br>🗡️ <b id="spears">0</b> &nbsp;💣 <b id="bombs">0</b> &nbsp;💎 <b id="elemStones">0</b> &nbsp;🔑 <b id="keysEl">0</b></div>
 <div id="damage">⚔️ Damage: <b id="dmg">1</b></div>
 <div id="name">Зомбі</div>
 <div id="hpbox"><div id="hpbar"></div></div>
@@ -207,7 +207,7 @@
       <button id="buyGoldMinerBtn">Купити</button>
     </div>
     <div class="shopItem" id="victoryItem" style="border-color:#ffd700">
-      <div class="info"><b id="victoryItemName">🏆 Перемога</b><small id="victoryItemDesc">100,000,000 🪙</small><br><small id="victoryLockLabel" style="color:#f80;display:none">🔒 Рівень 15</small></div>
+      <div class="info"><b id="victoryItemName">🏆 Перемога</b><small id="victoryItemDesc">100.000.000 🪙 + 3 🔑</small></div>
       <button id="buyVictory">Купити</button>
     </div>
     <div class="shopItem" id="cannonItem">
@@ -472,7 +472,7 @@
 <div id="adminControls" style="display:none"><hr>
 <input id="giveAmount" type="number" value="100" min="0" style="padding:10px;width:120px;border-radius:8px;border:0">
 <select id="giveType" style="padding:10px;border-radius:8px">
-<option value="coins">🪙 Монети</option><option value="arrows">🏹 Стріли</option><option value="stones">❤️ Камені</option><option value="spears">🗡️ Списи</option><option value="bombs">💣 Бомби</option>
+<option value="coins">🪙 Монети</option><option value="arrows">🏹 Стріли</option><option value="stones">❤️ Камені</option><option value="spears">🗡️ Списи</option><option value="bombs">💣 Бомби</option><option value="keys">🔑 Ключі</option>
 </select><button class="actbtn" id="giveBtn">Видати</button><br>
 <input id="setDamage" type="number" value="100" min="0" step="0.1" style="padding:10px;width:120px;border-radius:8px;border:0">
 <button class="actbtn" id="giveDamageBtn">Встановити Damage</button><br>
@@ -624,7 +624,7 @@ function applyLang(){
   // Перемога
   const vn=$("victoryItemName"),vd=$("victoryItemDesc");
   if(vn)vn.textContent=t("victoryName");
-  if(vd)vd.textContent=t("victoryDesc")+" | 100,000,000 🪙";
+  if(vd)vd.textContent="100.000.000 🪙 + 3 🔑";
   // Голод і їжа
   $("hungerLabel").textContent=t("hunger");
   $("tabFood").textContent=t("food");
@@ -646,13 +646,13 @@ function applyLang(){
   document.querySelector("#admin h2").textContent=t("adminTitle");
 }
 
-let coins=0,arrows=0,stones=0,spears=0,bombs=0,elemStones=0,damage=1,hp=10,maxHp=10,price=15,purchase=0,monsterType="zombie",shootReady=true,cooldown=0;
+let coins=0,arrows=0,stones=0,spears=0,bombs=0,elemStones=0,goldenKeys=0,damage=1,hp=10,maxHp=10,price=15,purchase=0,monsterType="zombie",shootReady=true,cooldown=0;
 let superPowerActive=false,superPowerTimer=null;
 let hunger=100,hungerHitCount=0,hungerTimerStarted=false;
 let foodInv={apple:0,meat:0,pizza:0,banana:0,weirdFruit:0,watermelon:0,toxicStrawberry:0,pineapple:0};
 let meatDebuffTimer=null,meatDebuffActive=false;
 let coinMult=1,coinMultTimer=null;
-let xp=0,xpLevel=1,xpMax=1000;
+let xp=0,xpLevel=1,xpMax=1000,xpMaxReached=false;
 let streakType="",streakCount=0;
 let spellCDs={lightning:0,flasher:0,luckyJack:0};
 let flasherActive=false,flasherTimer=null,flasherInterval=null;
@@ -680,7 +680,7 @@ let bladeOwned=false,bladeChance=0.01,bladeUpgPrice=500;
 let holdStart=null,holdAnim=null,holding=false,adminUnlocked=false,adminUsed=false,bugTestMode=false;
 
 const $=id=>document.getElementById(id);
-const coinsEl=$("coins"),arrowsEl=$("arrows"),stonesEl=$("stones"),spearsEl=$("spears"),bombsEl=$("bombs"),elemStonesEl=$("elemStones"),dmgEl=$("dmg");
+const coinsEl=$("coins"),arrowsEl=$("arrows"),stonesEl=$("stones"),spearsEl=$("spears"),bombsEl=$("bombs"),elemStonesEl=$("elemStones"),dmgEl=$("dmg"),keysEl=$("keysEl");
 const hpBar=$("hpbar"),hpText=$("hptext"),nameEl=$("name");
 const monster=$("monster"),shoot=$("shoot"),cooldownEl=$("cooldown"),spearcooldownEl=$("spearcooldown");
 const useBomb=$("useBomb");
@@ -787,7 +787,7 @@ adminLogin.onclick=()=>{
     adminMsg.textContent="OK"+(bugTestMode?" [bugtest]":"");
   } else adminMsg.textContent="Wrong password";
 };
-give.onclick=()=>{if(!adminUnlocked)return;adminUsed=true;let v=Math.max(0,Number(giveAmount.value)||0),t=giveType.value;if(t==="coins")coins+=v;else if(t==="arrows")arrows+=v;else if(t==="stones")stones+=v;else if(t==="spears")spears+=v;else if(t==="bombs")bombs+=v;update();adminMsg.textContent="Given: "+v};
+give.onclick=()=>{if(!adminUnlocked)return;adminUsed=true;let v=Math.max(0,Number(giveAmount.value)||0),t=giveType.value;if(t==="coins")coins+=v;else if(t==="arrows")arrows+=v;else if(t==="stones")stones+=v;else if(t==="spears")spears+=v;else if(t==="bombs")bombs+=v;else if(t==="keys")goldenKeys+=v;update();adminMsg.textContent="Given: "+v};
 giveDamage.onclick=()=>{if(!adminUnlocked)return;damage=Math.max(0,Number(setDamage.value)||0);update();adminMsg.textContent="Damage: "+fmt(damage)};
 spawnAdmin.onclick=()=>{if(!adminUnlocked)return;let t=spawnType.value;
 if(t==="zombie"){monsterType="zombie";maxHp=10;hp=10;nameEl.textContent="Зомбі";setColor("#39d353","#39d353")}
@@ -833,14 +833,16 @@ function discPrice(p){return discountActive?Math.ceil(p*0.8):p;}
 function updateXP(){
   const bar=$("xpBar"),pct=$("xpPct"),lvl=$("xpLevel");
   if(!bar)return;
+  if(xpLevel>=20){bar.style.width="100%";pct.textContent="MAX";lvl.textContent="20";return;}
   bar.style.width=Math.min(100,xp/xpMax*100)+"%";
   pct.textContent=Math.floor(xp)+" / "+xpMax+" XP";
   lvl.textContent=xpLevel;
 }
 function gainXP(amount){
-  if(!amount)return;
+  if(!amount||xpLevel>=20)return;
   xp+=amount*xpMult;
-  while(xp>=xpMax){xp-=xpMax;xpLevel++;xpMax=Math.ceil(xpMax*2.5);}
+  while(xp>=xpMax&&xpLevel<20){xp-=xpMax;xpLevel++;xpMax=Math.ceil(xpMax*2.5);}
+  if(xpLevel>=20&&!xpMaxReached){xp=xpMax;xpMaxReached=true;goldenKeys++;update();}
   updateXP();updateSpellBtn();updateGiftBtn();updateTradeBtn();
 }
 
@@ -1230,7 +1232,7 @@ function renderPotionPanel(){
 function getSaveData(){
   return {
     // Валюти
-    coins,arrows,stones,spears,bombs,elemStones,
+    coins,arrows,stones,spears,bombs,elemStones,goldenKeys,
     // Стан гравця
     damage,purchase,price,
     xp,xpLevel,xpMax,
@@ -1264,7 +1266,7 @@ function getSaveData(){
 function loadSaveData(d){
   try{
     coins=d.coins||0;arrows=d.arrows||0;stones=d.stones||0;
-    spears=d.spears||0;bombs=d.bombs||0;elemStones=d.elemStones||0;
+    spears=d.spears||0;bombs=d.bombs||0;elemStones=d.elemStones||0;goldenKeys=d.goldenKeys||0;
     damage=d.damage||1;purchase=d.purchase||0;price=d.price||15;
     xp=d.xp||0;xpLevel=d.xpLevel||1;xpMax=d.xpMax||1000;
     hunger=d.hunger??100;
@@ -1444,8 +1446,7 @@ function showXPInfo(){
     {level:2,name:{uk:"🔮 Заклинання",en:"🔮 Spells",ru:"🔮 Заклинания"}},
     {level:3,name:{uk:"🎁 Подарунки",en:"🎁 Gifts",ru:"🎁 Подарки"}},
     {level:4,name:{uk:"💱 Обмін",en:"💱 Trade",ru:"💱 Обмен"}},
-    {level:6,name:{uk:"🔆 Мега-лазер + 🗡️ Лезо",en:"🔆 Mega-laser + 🗡️ Blade",ru:"🔆 Мега-лазер + 🗡️ Лезвие"}},
-    {level:15,name:{uk:"🏆 Перемога",en:"🏆 Victory",ru:"🏆 Победа"}}
+    {level:6,name:{uk:"🔆 Мега-лазер + 🗡️ Лезо",en:"🔆 Mega-laser + 🗡️ Blade",ru:"🔆 Мега-лазер + 🗡️ Лезвие"}}
   ];
   const next=locked.filter(f=>f.level>xpLevel);
   const overlay=$("xpInfoOverlay");
@@ -1590,7 +1591,8 @@ if(hasArmor){maxHp=Math.round(maxHp*2.5);hp=maxHp;applyArmorStyle();}
 }
 
 function update(){
-  coinsEl.textContent=Math.round(coins);arrowsEl.textContent=Math.round(arrows);stonesEl.textContent=Math.round(stones);spearsEl.textContent=Math.round(spears);bombsEl.textContent=Math.round(bombs);elemStonesEl.textContent=Math.round(elemStones);dmgEl.textContent=fmt(damage);
+  if(damage>500)damage=500;
+  coinsEl.textContent=Math.round(coins);arrowsEl.textContent=Math.round(arrows);stonesEl.textContent=Math.round(stones);spearsEl.textContent=Math.round(spears);bombsEl.textContent=Math.round(bombs);elemStonesEl.textContent=Math.round(elemStones);keysEl.textContent=goldenKeys;dmgEl.textContent=fmt(damage);
   hpText.textContent=fmt(Math.max(0,hp))+" / "+maxHp+" HP";hpBar.style.width=Math.max(0,hp/maxHp*100)+"%";
   shoot.disabled=!shootReady||arrows<1;cooldownEl.textContent=shootReady?"":t("reload")+cooldown+"с";
   useBomb.disabled=bombs<1;
@@ -1601,14 +1603,28 @@ function update(){
   buyBomb.disabled=coins<60;
   buyElemStone.disabled=stones<15;
   // Магазин — покращення
-  $("buyPriceLabel").textContent=price;buy.disabled=coins<price;
-  $("archerPrice").textContent=archerPrice;$("archerDmg").textContent=fmt(archerDmg);buyArcher.disabled=coins<archerPrice;
-  $("gunPrice").textContent=gunPrice;$("gunDmg").textContent=fmt(gunDmg);buyGun.disabled=coins<gunPrice||stones<3;
+  // Меч ліміт 500
+  const swordCapped=damage>=500;
+  $("buyPriceLabel").textContent=price;
+  buy.disabled=coins<price||swordCapped;
+  buy.textContent=swordCapped?"🚫 Ліміт":"Купити";
+  buy.style.opacity=swordCapped?"0.45":"1";
+  // Лучник ліміт 200
+  const archerCapped=archerDmg>=200;
+  $("archerPrice").textContent=archerPrice;$("archerDmg").textContent=fmt(archerDmg);
+  buyArcher.disabled=coins<archerPrice||archerCapped;
+  buyArcher.textContent=archerCapped?"🚫 Ліміт":"Купити";
+  buyArcher.style.opacity=archerCapped?"0.45":"1";
+  // Вогнестрілька ліміт 1600
+  const gunCapped=gunDmg>=1600;
+  $("gunPrice").textContent=gunPrice;$("gunDmg").textContent=fmt(gunDmg);
+  buyGun.disabled=coins<gunPrice||stones<3||gunCapped;
+  buyGun.textContent=gunCapped?"🚫 Ліміт":"Купити";
+  buyGun.style.opacity=gunCapped?"0.45":"1";
   $("minerPrice").textContent=minerPrice;$("minerRate").textContent=fmt(minerRate);buyMiner.disabled=coins<minerPrice;
   $("goldPrice").textContent=goldPrice;$("goldRate").textContent=fmt(goldRate);buyGoldMiner.disabled=coins<goldPrice;
-  $("victoryItem").style.opacity=xpLevel>=15?"1":"0.4";
-  $("victoryLockLabel").style.display=xpLevel>=15?"none":"inline";
-  buyVictory.disabled=coins<100000000||xpLevel<15;
+  $("victoryItem").style.opacity="1";
+  buyVictory.disabled=coins<100000000||goldenKeys<3;
   // Лезо меча — рівень 6
   bladeItem.style.opacity=xpLevel>=6?"1":"0.4";
   $("bladeLockLabel").style.display=xpLevel>=6?"none":"inline";
@@ -1896,9 +1912,9 @@ buySpear.onclick=()=>{if(coins<150)return;coins-=150;spears+=5;update()}
 buyBomb.onclick=()=>{if(coins<60)return;coins-=60;bombs++;update()}
 
 // Магазин — покращення
-buy.onclick=()=>{if(coins<price)return;coins-=price;damage+=.5+purchase*.2;purchase++;price=Math.ceil(price*1.6);gainXP(5);update()}
-buyArcher.onclick=()=>{if(coins<archerPrice)return;coins-=archerPrice;archerCount++;archerDmg*=1.05;archerPrice=Math.ceil(archerPrice*1.5);gainXP(15);if(!archerTimer)archerTimer=setInterval(()=>{if(hp>0&&archerCount){hit(archerDmg*archerCount);hitBubblesOverMonster(archerDmg*archerCount);}},1000/1.3);update()}
-buyGun.onclick=()=>{if(coins<gunPrice||stones<3)return;coins-=gunPrice;stones-=3;gunCount++;gunDmg*=1.2;gunPrice=Math.ceil(gunPrice*1.6);gainXP(45);if(!gunTimer)gunTimer=setInterval(()=>{if(hp>0&&gunCount){hp-=gunDmg*gunCount;hitBubblesOverMonster(gunDmg*gunCount);setColor("#f33","#f00");fire.style.display="block";setTimeout(()=>{fire.style.display="none";restoreColor()},400);if(hp<=0)kill();update()}},3400);update()}
+buy.onclick=()=>{if(coins<price)return;coins-=price;damage=Math.min(500,damage+.5+purchase*.2);purchase++;price=Math.ceil(price*1.6);gainXP(5);update()}
+buyArcher.onclick=()=>{if(coins<archerPrice)return;coins-=archerPrice;archerCount++;archerDmg=Math.min(200,archerDmg*1.05);archerPrice=Math.ceil(archerPrice*1.5);gainXP(15);if(!archerTimer)archerTimer=setInterval(()=>{if(hp>0&&archerCount){hit(archerDmg*archerCount);hitBubblesOverMonster(archerDmg*archerCount);}},1000/1.3);update()}
+buyGun.onclick=()=>{if(coins<gunPrice||stones<3)return;coins-=gunPrice;stones-=3;gunCount++;gunDmg=Math.min(1600,gunDmg*1.2);gunPrice=Math.ceil(gunPrice*1.6);gainXP(45);if(!gunTimer)gunTimer=setInterval(()=>{if(hp>0&&gunCount){hp-=gunDmg*gunCount;hitBubblesOverMonster(gunDmg*gunCount);setColor("#f33","#f00");fire.style.display="block";setTimeout(()=>{fire.style.display="none";restoreColor()},400);if(hp<=0)kill();update()}},3400);update()}
 buyMiner.onclick=()=>{if(coins<minerPrice)return;coins-=minerPrice;minerCount++;minerPrice=Math.ceil(minerPrice*2.5);minerRate*=2;if(!minerTimer)minerTimer=setInterval(()=>{stones+=minerRate;update()},15000);update()}
 
 elFireBtn.onclick=()=>{
@@ -1978,8 +1994,8 @@ buyCannon.onclick=()=>{const p=discPrice(cannonPrice);if(coins<p)return;coins-=p
 giveHungerBtn.onclick=()=>{if(!adminUnlocked)return;hunger=Math.max(0,Math.min(100,Number($("setHunger").value)||0));updateHunger();adminMsg.textContent="Hunger: "+hunger+"%";}
 
 buyVictory.onclick=()=>{
-  if(coins<100000000||xpLevel<15)return;
-  coins-=100000000;
+  if(coins<100000000||goldenKeys<3)return;
+  coins-=100000000;goldenKeys-=3;
   $("shopOverlay").style.display="none";
   if(!adminUsed||bugTestMode)showResult(true);
   else showResult(false);
@@ -2057,7 +2073,7 @@ function bubbleLoop(ts){
   requestAnimationFrame(bubbleLoop);
 }
 
-setInterval(spawnBubble,5000);
+setInterval(spawnBubble,20000);
 requestAnimationFrame(bubbleLoop);
 // ===== КІНЕЦЬ БУЛЬБАШОК =====
 
